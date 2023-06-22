@@ -7,6 +7,7 @@ import 'package:surah_schedular/src/utils/theme_helpers.dart';
 import 'package:surah_schedular/src/widgets/azaan_view.dart';
 import 'package:surah_schedular/src/widgets/method_dropdown.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
+import 'package:surah_schedular/src/widgets/surah_dropdown.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initializeData(context) async {
     if (count == 0) {
+      count++;
       AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
       final formInput = azaanBloc.formInputs;
       formInput.city = "New York";
@@ -58,8 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
       await azaanBloc.getTodayAzaan(formInput.city, formInput.country, formInput.method, formInput.school).then((value) {
         azaanBloc.setSchedularTimer();
       });
-
-      count++;
     }
   }
 
@@ -144,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                           child: const Text('Save Settings'),
                         ),
+                        const SurahDropdown()
                       ],
                     ),
                   ),
@@ -163,13 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     onPressed: () {
-                      azaanBloc.prayerSchedular.addNewSchedule("Azaan Testing", "19-06-2023", "22:56");
+                      azaanBloc.prayerSchedular.addNewSchedule("Magrib Azaan 1 2 3 4 5 6 7", "21-06-2023", "22:35", 0, "");
                     },
                     child: const Text('Play'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // Set the background color
+                      backgroundColor: Colors.yellow, // Set the background color
                       textStyle: const TextStyle(color: textColor), // Set the text color
                       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
                       shape: RoundedRectangleBorder(
@@ -177,9 +178,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                     onPressed: () {
-                      azaanBloc.prayerSchedular.addNewSchedule("Azaan Testing 2", "19-06-2023", "22:58");
+                      azaanBloc.prayerSchedular.pausePlayer();
                     },
-                    child: const Text('Play 2'),
+                    child: const Text('Pause'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange, // Set the background color
+                      textStyle: const TextStyle(color: textColor), // Set the text color
+                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0), // Set the border radius
+                      ),
+                    ),
+                    onPressed: () {
+                      azaanBloc.prayerSchedular.resumePlayer();
+                    },
+                    child: const Text('Resume'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

@@ -30,6 +30,9 @@ class _SchoolDropdownState extends State<SchoolDropdown> {
           ),
         ),
         DropdownButton<String>(
+          dropdownColor: Colors.black,
+          autofocus: false,
+          focusColor: Colors.transparent,
           value: selected,
           onChanged: (newValue) {
             setState(() {

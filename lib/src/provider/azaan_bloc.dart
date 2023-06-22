@@ -5,6 +5,8 @@ import 'package:surah_schedular/src/models/schedular.dart';
 import 'package:surah_schedular/src/models/todaysAzaan.dart';
 import 'package:surah_schedular/src/services/api_services.dart';
 
+import '../models/surah.dart';
+
 class AzaanBloc extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
 
@@ -64,12 +66,35 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  Schedular _surahSchedular = Schedular();
+  get surahSchedular => _surahSchedular;
+  set surahSchedular(var value) {
+    _surahSchedular = value;
+    notifyListeners();
+  }
+
   Future<void> setSchedularTimer() async {
     prayerSchedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
     todayAzaan.prayerTimes?.forEach((key, value) {
-      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value);
+      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0, "");
     });
     prayerSchedular.printActiveTasks();
+  }
+
+  List<Surah> _surahList = [];
+  get surahList => _surahList;
+  set surahList(var value) {
+    _surahList = value;
+    notifyListeners();
+  }
+
+  Future getSurahList() async {
+    if (_surahList.isEmpty) {
+      await _apiServices.getSurahList().then((value) {
+        _surahList = value;
+      });
+    }
+    return _surahList;
   }
 }

@@ -44,6 +44,9 @@ class _MethodDropdownState extends State<MethodDropdown> {
             }
 
             return DropdownButton<int>(
+              dropdownColor: Colors.black,
+              autofocus: false,
+              focusColor: Colors.transparent,
               value: selectedMethodId,
               onChanged: (newValue) {
                 setState(() {
