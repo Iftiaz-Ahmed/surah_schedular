@@ -10,4 +10,8 @@ class TodayAzaan {
     print(prayerTimes);
     print(gregorianDate);
   }
+
+  String? getPrayerTime(String prayer) {
+    return prayerTimes?[prayer];
+  }
 }

@@ -1,0 +1,15 @@
+# Target labels
+ nuget-populate
+# Source files and their labels
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test.rule
+D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update.rule

@@ -1,0 +1,49 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test.rule"
+		},
+		{
+			"file" : "D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"nuget-populate"
+		],
+		"name" : "nuget-populate"
+	}
+}
