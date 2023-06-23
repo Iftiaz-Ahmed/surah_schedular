@@ -8,6 +8,7 @@ import 'package:surah_schedular/src/utils/theme_helpers.dart';
 import 'package:surah_schedular/src/widgets/azaan_view.dart';
 import 'package:surah_schedular/src/widgets/method_dropdown.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
+import 'package:surah_schedular/src/widgets/surah_dropdown.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -166,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                           child: const Text('Save Settings'),
                         ),
+                        const SurahDropdown()
                       ],
                     ),
                   ),
