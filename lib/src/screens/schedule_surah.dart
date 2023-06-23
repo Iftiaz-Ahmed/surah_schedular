@@ -39,6 +39,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
   void initState() {
     super.initState();
     _timeTextController.text = "00";
+    _scheduledDate.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
+    _scheduledTime.text = DateFormat('HH:mm').format(DateTime.now());
   }
 
   @override
@@ -104,7 +106,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                           ),
                           style: const TextStyle(color: textColor, fontSize: 20),
                           dateMask: 'd MMM, yyyy',
-                          initialValue: DateFormat('dd-MM-yyyy').format(DateTime.now()),
+                          initialValue: _scheduledDate.text,
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
                           dateLabelText: 'Date',
@@ -201,10 +203,11 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                 ),
                               ),
                               style: const TextStyle(color: textColor, fontSize: 20),
-                              initialValue: DateFormat('HH:mm').format(DateTime.now()),
+                              initialValue: _scheduledTime.text,
                               onChanged: (val) {
                                 setState(() {
                                   _scheduledTime.text = val;
+                                  print(_scheduledTime.text);
                                 });
                               },
                               validator: (val) {
