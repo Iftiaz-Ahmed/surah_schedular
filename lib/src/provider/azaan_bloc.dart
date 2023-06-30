@@ -78,9 +78,8 @@ class AzaanBloc extends ChangeNotifier {
     prayerSchedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
     todayAzaan.prayerTimes?.forEach((key, value) {
-      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0, "");
+      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0, "", 0);
     });
-    prayerSchedular.printActiveTasks();
   }
 
   List<Surah> _surahList = [];
