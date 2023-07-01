@@ -98,7 +98,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                           ),
                           trailing: IconButton(
                             onPressed: () {
-                              azaanBloc.surahSchedular.deleteTask(azaanBloc.surahSchedular.tasks[index]);
+                              azaanBloc.surahSchedular.deleteTask(index);
                             },
                             icon: const Icon(
                               Icons.clear,

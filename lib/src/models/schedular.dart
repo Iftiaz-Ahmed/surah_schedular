@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:flutter_tts/flutter_tts.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:surah_schedular/src/models/task.dart';
 
 class Schedular {
@@ -127,29 +127,39 @@ class Schedular {
   }
 
   Future<void> saveTasks() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> stringTasks = [];
-    for (var item in tasks) {
-      if (item.sourceType == 1) {
-        stringTasks.add(item.toString());
+    try {
+      bool isSurah = false;
+      final LocalStorage storage = LocalStorage('surah_schedule.json');
+      List<String> stringTasks = [];
+      for (var item in tasks) {
+        if (item.sourceType == 1) {
+          stringTasks.add(item.toString());
+          isSurah = true;
+        }
       }
-    }
-    await prefs.setStringList('tasks', stringTasks);
+      if (isSurah) {
+        await storage.setItem('tasks', stringTasks);
+      }
+    } catch (e) {}
   }
 
   Future<void> retrieveTasks() async {
-    tasks.clear();
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String>? items = prefs.getStringList('tasks');
-    if (items != null) {
-      items.forEach((item) {
-        print(items);
+    try {
+      tasks.clear();
+      final LocalStorage storage = LocalStorage('surah_schedule.json');
+      await storage.clear();
+      List items = [];
+      await storage.ready.then((value) {
+        items = storage.getItem('tasks') ?? [];
+      });
+
+      for (var item in items) {
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;
         if (jsonMap['sourceType'] == 1) {
           addNewSchedule(jsonMap['name'], jsonMap['date'], jsonMap['time'], jsonMap['sourceType'], jsonMap['source'], jsonMap['frequency']);
         }
-      });
-    }
+      }
+    } catch (e) {}
   }
 
   deleteTask(int index) {
