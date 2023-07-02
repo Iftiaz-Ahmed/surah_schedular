@@ -2,17 +2,41 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:surah_schedular/src/models/prayerMethod.dart';
 import 'package:surah_schedular/src/models/todaysAzaan.dart';
 
 import '../models/surah.dart';
 
 class ApiServices {
-  Future getAzaanTime(String? city, String? country, int? method, int? school) async {
-    TodayAzaan todayAzaan = TodayAzaan();
+  Future getLatLng(String? zipcode) async {
+    List list = [];
     try {
       final response =
-          await http.get(Uri.parse('http://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=${method}&school=${school}'));
+          await http.get(Uri.parse('http://api.positionstack.com/v1/forward?access_key=0dfd924fc81476c579e666e1a930612c& query=$zipcode'));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        List data = jsonResponse['data'];
+
+        list.add(data[0]["latitude"]);
+        list.add(data[0]["longitude"]);
+
+        return list;
+      }
+    } on HttpException {
+      print("http exception");
+    }
+  }
+
+  Future getAzaanTime(var latitude, var longitude, int? method, int? school) async {
+    TodayAzaan todayAzaan = TodayAzaan();
+    try {
+      DateTime date = DateTime.now();
+      String formattedDate = DateFormat('dd-MM-yyyy').format(date);
+      final response = await http
+          .get(Uri.parse('http://api.aladhan.com/v1/timings/$formattedDate?latitude=$latitude&longitude=$longitude&method=$method&school=$school'));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);

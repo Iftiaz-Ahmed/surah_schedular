@@ -18,6 +18,11 @@ class _SchoolDropdownState extends State<SchoolDropdown> {
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    if (azaanBloc.formInputs.school == 1) {
+      selected = 'HANAFI';
+    } else {
+      selected = 'SHAFI';
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,

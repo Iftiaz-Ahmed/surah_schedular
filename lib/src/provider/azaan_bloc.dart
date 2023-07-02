@@ -19,6 +19,13 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List> getLatLng(String zipcode) async {
+    List list = [];
+    list = await _apiServices.getLatLng(zipcode);
+
+    return list;
+  }
+
   TodayAzaan _todayAzaan = TodayAzaan();
   get todayAzaan => _todayAzaan;
   set todayAzaan(var value) {
@@ -33,8 +40,8 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future getTodayAzaan(String? city, String? country, int? method, int? school) async {
-    await _apiServices.getAzaanTime(city, country, method, school).then((value) {
+  Future getTodayAzaan(var latitude, var longitude, int? method, int? school) async {
+    await _apiServices.getAzaanTime(latitude, longitude, method, school).then((value) {
       if (value != []) {
         azaanTimeStatus = true;
       } else {

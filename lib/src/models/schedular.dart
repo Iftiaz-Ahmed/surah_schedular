@@ -129,7 +129,7 @@ class Schedular {
   Future<void> saveTasks() async {
     try {
       bool isSurah = false;
-      final LocalStorage storage = LocalStorage('surah_schedule.json');
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
       List<String> stringTasks = [];
       for (var item in tasks) {
         if (item.sourceType == 1) {
@@ -146,7 +146,7 @@ class Schedular {
   Future<void> retrieveTasks() async {
     try {
       tasks.clear();
-      final LocalStorage storage = LocalStorage('surah_schedule.json');
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
       await storage.clear();
       List items = [];
       await storage.ready.then((value) {

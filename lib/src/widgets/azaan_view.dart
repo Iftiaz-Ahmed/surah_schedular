@@ -46,7 +46,7 @@ class AzaanView extends StatelessWidget {
             ),
             azaanBloc.azaanTimeStatus
                 ? Text(
-                    'Prayer timings showing for ${azaanBloc.formInputs.city}, ${azaanBloc.formInputs.country}.',
+                    'Prayer timings showing for ${azaanBloc.formInputs.zipcode}.',
                     style: const TextStyle(color: textColor),
                   )
                 : const Text(''),

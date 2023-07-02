@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/Components/input_field.dart';
+import 'package:surah_schedular/src/models/formInputs.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
 import 'package:surah_schedular/src/screens/schedule_surah.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
@@ -49,16 +50,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int count = 0;
+  final TextEditingController _zipController = TextEditingController();
 
   Future<void> initializeData(context) async {
     if (count == 0) {
       count++;
       AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-      final formInput = azaanBloc.formInputs;
-      formInput.city = "New York";
-      formInput.country = "United States";
-      await azaanBloc.getTodayAzaan(formInput.city, formInput.country, formInput.method, formInput.school).then((value) {
-        azaanBloc.setSchedularTimer();
+      final FormInputs formInput = azaanBloc.formInputs;
+      await formInput.retrieveInfo().then((value) {
+        _zipController.text = formInput.zipcode;
+        azaanBloc.getTodayAzaan(formInput.latitude, formInput.longitude, formInput.method, formInput.school).then((value) {
+          azaanBloc.setSchedularTimer();
+        });
       });
     }
   }
@@ -116,26 +119,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           margin: const EdgeInsets.only(top: 10),
                           width: 300,
                           child: InputField(
-                            hintText: 'Enter City',
-                            keyboardType: TextInputType.text,
+                            hintText: 'Enter zip code',
+                            keyboardType: TextInputType.number,
                             onChanged: (value) {
                               setState(() {
-                                azaanBloc.formInputs.city = value;
+                                azaanBloc.formInputs.zipcode = value;
                               });
                             },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          width: 300,
-                          child: InputField(
-                            hintText: 'Enter Country',
-                            keyboardType: TextInputType.text,
-                            onChanged: (value) {
-                              setState(() {
-                                azaanBloc.formInputs.country = value;
-                              });
-                            },
+                            controller: _zipController,
                           ),
                         ),
                         const MethodDropdown(),
@@ -153,15 +144,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                           onPressed: () {
-                            azaanBloc
-                                .getTodayAzaan(
-                              azaanBloc.formInputs.city,
-                              azaanBloc.formInputs.country,
-                              azaanBloc.formInputs.method,
-                              azaanBloc.formInputs.school,
-                            )
-                                .then((value) {
-                              azaanBloc.setSchedularTimer();
+                            azaanBloc.getLatLng(azaanBloc.formInputs.zipcode).then((value) {
+                              azaanBloc.formInputs.latitude = value[0];
+                              azaanBloc.formInputs.longitude = value[1];
+                              azaanBloc
+                                  .getTodayAzaan(
+                                value[0],
+                                value[1],
+                                azaanBloc.formInputs.method,
+                                azaanBloc.formInputs.school,
+                              )
+                                  .then((value) {
+                                azaanBloc.setSchedularTimer();
+                                azaanBloc.formInputs.saveInfo(azaanBloc.formInputs.toString());
+                              });
                             });
                           },
                           child: const Text('Save Settings'),
