@@ -23,11 +23,11 @@ events:
       
       The output was:
       0
-      Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32535 for x64
+      Microsoft (R) C/C++ Optimizing Compiler Version 19.36.32537 for x64
       Copyright (C) Microsoft Corporation.  All rights reserved.
       
       CMakeCXXCompilerId.cpp
-      Microsoft (R) Incremental Linker Version 14.36.32535.0
+      Microsoft (R) Incremental Linker Version 14.36.32537.0
       Copyright (C) Microsoft Corporation.  All rights reserved.
       
       /out:CMakeCXXCompilerId.exe 
@@ -63,8 +63,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-0miepi"
-      binary: "D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-0miepi"
+      source: "D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-b1nfen"
+      binary: "D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-b1nfen"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -73,10 +73,10 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-0miepi
+        Change Dir: D:/Client/surah_schedular/windows/out/build/x64-Debug/CMakeFiles/CMakeScratch/TryCompile-b1nfen
         
-        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v cmTC_48333 && [1/2] C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1436~1.325\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP   /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_48333.dir\\CMakeCXXCompilerABI.cpp.obj /FdCMakeFiles\\cmTC_48333.dir\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
-        [2/2] cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_48333.dir --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100190~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100190~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1436~1.325\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_48333.dir\\CMakeCXXCompilerABI.cpp.obj  /out:cmTC_48333.exe /implib:cmTC_48333.lib /pdb:cmTC_48333.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+        Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v cmTC_3efd2 && [1/2] C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1436~1.325\\bin\\Hostx64\\x64\\cl.exe  /nologo /TP   /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\\cmTC_3efd2.dir\\CMakeCXXCompilerABI.cpp.obj /FdCMakeFiles\\cmTC_3efd2.dir\\ /FS -c "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+        [2/2] cmd.exe /C "cd . && "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\\cmTC_3efd2.dir --rc=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\rc.exe --mt=C:\\PROGRA~2\\WI3CF2~1\\10\\bin\\100226~1.0\\x64\\mt.exe --manifests  -- C:\\PROGRA~1\\MICROS~4\\2022\\COMMUN~1\\VC\\Tools\\MSVC\\1436~1.325\\bin\\Hostx64\\x64\\link.exe /nologo CMakeFiles\\cmTC_3efd2.dir\\CMakeCXXCompilerABI.cpp.obj  /out:cmTC_3efd2.exe /implib:cmTC_3efd2.lib /pdb:cmTC_3efd2.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
         
       exitCode: 0
 ...

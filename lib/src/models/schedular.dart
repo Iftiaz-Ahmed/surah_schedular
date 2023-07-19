@@ -30,7 +30,8 @@ class Schedular {
 
   void startTimer(Duration duration, Task task) {
     Timer newTimer = Timer(duration, () async {
-      print('Task executed at ${task.time} on ${task.date}');
+      print('Task scheduled at ${task.time} on ${task.date}');
+      print("Executed at ${DateTime.now()}");
       // await textToSpeech(task.name).then((value) {
       //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
       // });
@@ -54,20 +55,22 @@ class Schedular {
     List convertedTime = convertDateTime(time, ":");
 
     var currentTime = DateTime.now();
-    var desiredTime = DateTime(convertedDate[2], convertedDate[1], convertedDate[0], convertedTime[0], convertedTime[1], 0);
+    DateTime desiredTime = DateTime(convertedDate[2], convertedDate[1], convertedDate[0], convertedTime[0], convertedTime[1], 0);
 
-    if (frequency == 1) {
+    if (frequency == 0) {
+      if (currentTime.isAfter(desiredTime)) {
+        return;
+      }
+    } else if (frequency == 1) {
       desiredTime = DateTime(currentTime.year, currentTime.month, currentTime.day, convertedTime[0], convertedTime[1], 0);
     } else if (frequency == 2) {
       int todayWeekday = currentTime.weekday;
       int weekday = desiredTime.weekday;
       if (todayWeekday == weekday) {
         desiredTime = DateTime(currentTime.year, currentTime.month, currentTime.day, convertedTime[0], convertedTime[1], 0);
+      } else {
+        return;
       }
-    }
-
-    if (currentTime.isAfter(desiredTime)) {
-      desiredTime = desiredTime.add(const Duration(days: 1));
     }
 
     var duration = desiredTime.difference(currentTime);

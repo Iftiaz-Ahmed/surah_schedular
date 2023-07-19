@@ -7,7 +7,7 @@ import '../utils/color_const.dart';
 
 class SurahDropdown extends StatefulWidget {
   final Function(Surah) callback;
-  const SurahDropdown({super.key, required this.callback});
+  const SurahDropdown({key, required this.callback});
 
   @override
   State<SurahDropdown> createState() => _SurahDropdownState();

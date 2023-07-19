@@ -6,13 +6,30 @@ class FormInputs {
   var latitude;
   var longitude;
   var zipcode;
+  var city;
+  var country;
   int? method = 3;
   int? school = 1;
 
-  FormInputs({this.latitude, this.longitude, this.zipcode, this.method, this.school});
+  FormInputs(
+      {this.latitude,
+      this.longitude,
+      this.zipcode,
+      this.city,
+      this.country,
+      this.method,
+      this.school});
 
   Map<String, dynamic> toJson() {
-    return {'latitude': latitude, 'longitude': longitude, 'zipcode': zipcode, 'method': method, 'school': school};
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'zipcode': zipcode,
+      'city': city,
+      'country': country,
+      'method': method,
+      'school': school
+    };
   }
 
   @override
@@ -38,6 +55,8 @@ class FormInputs {
         latitude = jsonMap['latitude'];
         longitude = jsonMap['longitude'];
         zipcode = jsonMap['zipcode'];
+        city = jsonMap['city'];
+        country = jsonMap['country'];
         method = jsonMap['method'];
         school = jsonMap['school'];
       });

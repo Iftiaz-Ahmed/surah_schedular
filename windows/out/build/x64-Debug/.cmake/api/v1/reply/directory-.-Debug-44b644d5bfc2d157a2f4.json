@@ -1,0 +1,121 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 75,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 78,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 81,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 85,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 93,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 96,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime",
+			"destination" : "D:/Client/surah_schedular/windows/out/install/x64-Debug",
+			"paths" : 
+			[
+				"runner/surah_schedular.exe"
+			],
+			"targetId" : "surah_schedular::@056c4f61b0156d1d9b06",
+			"targetIndex" : 5,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime",
+			"destination" : "D:/Client/surah_schedular/windows/out/install/x64-Debug/data",
+			"paths" : 
+			[
+				"flutter/ephemeral/icudtl.dat"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime",
+			"destination" : "D:/Client/surah_schedular/windows/out/install/x64-Debug",
+			"paths" : 
+			[
+				"flutter/ephemeral/flutter_windows.dll"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime",
+			"destination" : "D:/Client/surah_schedular/windows/out/install/x64-Debug",
+			"paths" : 
+			[
+				"out/build/x64-Debug/plugins/audioplayers_windows/audioplayers_windows_plugin.dll",
+				"out/build/x64-Debug/plugins/network_info_plus/network_info_plus_plugin.dll"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Runtime",
+			"type" : "code"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "Runtime",
+			"destination" : "D:/Client/surah_schedular/windows/out/install/x64-Debug/data",
+			"paths" : 
+			[
+				"D:/Client/surah_schedular/build//flutter_assets"
+			],
+			"type" : "directory"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

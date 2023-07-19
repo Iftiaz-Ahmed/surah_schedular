@@ -1,24 +1,206 @@
+import 'package:args/args.dart';
+import 'package:dart_chromecast/casting/cast_media.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
-import 'package:surah_schedular/src/Components/input_field.dart';
-import 'package:surah_schedular/src/models/formInputs.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
-import 'package:surah_schedular/src/screens/schedule_surah.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
 import 'package:surah_schedular/src/utils/theme_helpers.dart';
-import 'package:surah_schedular/src/widgets/azaan_view.dart';
-import 'package:surah_schedular/src/widgets/method_dropdown.dart';
-import 'package:surah_schedular/src/widgets/school_dropdown.dart';
+import 'package:surah_schedular/src/widgets/home.dart';
 
-void main() {
+final Logger log = new Logger('Chromecast CLI');
+
+void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<AzaanBloc>.value(value: AzaanBloc()),
   ], child: const MyApp()));
+
+  // chromecast code
+  print("Arguments: $arguments");
+  final parser = new ArgParser()
+    ..addOption('host', abbr: 'h', defaultsTo: '')
+    ..addOption('port', abbr: 'p', defaultsTo: '8009')
+    ..addOption('title', abbr: 't', defaultsTo: null)
+    ..addOption('subtitle', abbr: 's', defaultsTo: null)
+    ..addOption('image', abbr: 'i', defaultsTo: '')
+    ..addFlag('append', abbr: 'a', defaultsTo: false)
+    ..addFlag('debug', abbr: 'd', defaultsTo: false);
+
+  final ArgResults argResults = parser.parse(arguments);
+
+  if (true == argResults['debug']) {
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((LogRecord rec) {
+      print('${rec.level.name}: ${rec.message}');
+    });
+  } else {
+    Logger.root.level = Level.OFF;
+  }
+
+  String imageUrl = argResults['image'];
+  final List<String> images = imageUrl != '' ? [imageUrl] : [];
+
+  // turn each rest argument string into a CastMedia instance
+  final List<CastMedia> media = argResults.rest
+      .map((String i) => CastMedia(
+          contentId: i,
+          images: images,
+          title: argResults['title'],
+          subtitle: argResults['subtitle']))
+      .toList();
+
+  String host = argResults['host'];
+  int? port = int.parse(argResults['port']);
+  // if ('' == host.trim()) {
+  // search!
+  //   print('Looking for ChromeCast devices...');
+  //
+  //   List<find_chromecast.CastDevice> devices = await find_chromecast.find_chromecasts();
+  //   if (devices.length == 0) {
+  //     print('No devices found!');
+  //     return;
+  //   }
+  //
+  //   print("Found ${devices.length} devices:");
+  //   for (int i = 0; i < devices.length; i++) {
+  //     int index = i + 1;
+  //     find_chromecast.CastDevice device = devices[i];
+  //     print("$index: ${device.name}");
+  //   }
+  //
+  //   print("Pick a device (1-${devices.length}):");
+  //
+  //   int? choice;
+  //
+  //   // while (choice == null || choice < 0 || choice > devices.length) {
+  //   //   choice = int.parse(stdin.readLineSync()!);
+  //   //   print("Please pick a number (1-${devices.length}) or press return to search again");
+  //   // }
+  //
+  //   find_chromecast.CastDevice pickedDevice = devices[0];
+  //
+  //   host = pickedDevice.ip!;
+  //   port = pickedDevice.port;
+  //
+  //   print("Connecting to device: $host:$port");
+  //
+  //   log.fine("Picked: $pickedDevice");
+  // }
+  //
+  // startCasting(media, host, port, argResults['append']);
 }
 
+// void startCasting(List<CastMedia> media, String host, int? port, bool? append) async {
+//   print("casting started");
+//   log.fine('Start Casting');
+//
+//   // try to load previous state saved as json in saved_cast_state.json
+//   Map? savedState;
+//   try {
+//     File savedStateFile = File("./saved_cast_state.json");
+//     savedState = jsonDecode(await savedStateFile.readAsString());
+//   } catch (e) {
+//     // does not exist yet
+//     log.warning('error fetching saved state' + e.toString());
+//   }
+//
+//   // create the chromecast device with the passed in host and port
+//   final CastDevice device = CastDevice(
+//     host: host,
+//     port: port,
+//     type: '_googlecast._tcp',
+//   );
+//
+//   // instantiate the chromecast sender class
+//   final CastSender castSender = CastSender(
+//     device,
+//   );
+//
+//   // listen for cast session updates and save the state when
+//   // the device is connected
+//   // castSender.castSessionController.stream.listen((CastSession? castSession) async {
+//   //   if (castSession!.isConnected) {
+//   //     File savedStateFile = File('./saved_cast_state.json');
+//   //     Map map = {
+//   //       'time': DateTime.now().millisecondsSinceEpoch,
+//   //     }..addAll(castSession.toMap());
+//   //     await savedStateFile.writeAsString(jsonEncode(map));
+//   //     log.fine('Cast session was saved to saved_cast_state.json.');
+//   //   }
+//   // });
+//
+//   CastMediaStatus? prevMediaStatus;
+//   // Listen for media status updates, such as pausing, playing, seeking, playback etc.
+//   castSender.castMediaStatusController.stream.listen((CastMediaStatus? mediaStatus) {
+//     // show progress for example
+//     if (mediaStatus == null) {
+//       return;
+//     }
+//     if (null != prevMediaStatus && mediaStatus.volume != prevMediaStatus!.volume) {
+//       // volume just updated
+//       log.info('Volume just updated to ${mediaStatus.volume}');
+//     }
+//     if (null == prevMediaStatus || mediaStatus.position != prevMediaStatus?.position) {
+//       // update the current progress
+//       log.info('Media Position is ${mediaStatus.position}');
+//     }
+//     prevMediaStatus = mediaStatus;
+//   });
+//
+//   bool connected = false;
+//   bool didReconnect = false;
+//
+//   if (null != savedState) {
+//     // If we have a saved state,
+//     // try to reconnect
+//     connected = await castSender.reconnect(
+//       sourceId: savedState['sourceId'],
+//       destinationId: savedState['destinationId'],
+//     );
+//     if (connected) {
+//       didReconnect = true;
+//     }
+//   }
+//
+//   // if reconnection failed or we never had a saved state to begin with
+//   // connect to a fresh session.
+//   if (!connected) {
+//     connected = await castSender.connect();
+//   }
+//
+//   if (!connected) {
+//     log.warning('COULD NOT CONNECT!');
+//     return;
+//   }
+//   log.info("Connected with device");
+//
+//   if (!didReconnect) {
+//     // dont relaunch if we just reconnected, because that would reset the player state
+//     castSender.launch();
+//   }
+//
+//   // load CastMedia playlist and send it to the chromecast
+//   castSender.loadPlaylist(media, append: append);
+//
+//   // Initiate key press handler
+//   // space = toggle pause
+//   // s = stop playing
+//   // left arrow = seek current playback - 10s
+//   // right arrow = seek current playback + 10s
+//   // up arrow = volume up 5%
+//   // down arrow = volume down 5%
+//   // stdin.echoMode = false;
+//   // stdin.lineMode = false;
+//
+//   // stdin.asBroadcastStream().listen((List<int> data) {
+//   //   _handleUserInput(castSender, data);
+//   // });
+//   print("casting ended");
+// }
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({key});
 
   // This widget is the root of your application.
   @override
@@ -33,206 +215,11 @@ class MyApp extends StatelessWidget {
               iconTheme: const IconThemeData(color: iconColors),
               foregroundColor: iconColors),
           canvasColor: bgColor,
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: ThemeHelpers().createMaterialColor(primarySwatch)).copyWith(background: bgColor)),
+          colorScheme: ColorScheme.fromSwatch(
+                  primarySwatch:
+                      ThemeHelpers().createMaterialColor(primarySwatch))
+              .copyWith(background: bgColor)),
       home: const MyHomePage(title: 'Surah Schedular'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int count = 0;
-  final TextEditingController _zipController = TextEditingController();
-
-  Future<void> initializeData(context) async {
-    if (count == 0) {
-      count++;
-      AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-      final FormInputs formInput = azaanBloc.formInputs;
-      await formInput.retrieveInfo().then((value) {
-        _zipController.text = formInput.zipcode;
-        azaanBloc.getTodayAzaan(formInput.latitude, formInput.longitude, formInput.method, formInput.school).then((value) {
-          azaanBloc.setSchedularTimer();
-        });
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    initializeData(context);
-    AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          widget.title,
-          style: const TextStyle(color: textColor),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: bgColor, // Set the background color
-                textStyle: const TextStyle(color: textColor), // Set the text color
-                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ScheduleSurah()),
-                );
-              },
-              child: const Text('Schedule Surah'),
-            ),
-          ),
-        ],
-      ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const AzaanView(),
-                  Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          width: 300,
-                          child: InputField(
-                            hintText: 'Enter zip code',
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                azaanBloc.formInputs.zipcode = value;
-                              });
-                            },
-                            controller: _zipController,
-                          ),
-                        ),
-                        const MethodDropdown(),
-                        const SchoolDropdown(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green, // Set the background color
-                            textStyle: const TextStyle(color: textColor), // Set the text color
-                            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                            ),
-                          ),
-                          onPressed: () {
-                            azaanBloc.getLatLng(azaanBloc.formInputs.zipcode).then((value) {
-                              azaanBloc.formInputs.latitude = value[0];
-                              azaanBloc.formInputs.longitude = value[1];
-                              azaanBloc
-                                  .getTodayAzaan(
-                                value[0],
-                                value[1],
-                                azaanBloc.formInputs.method,
-                                azaanBloc.formInputs.school,
-                              )
-                                  .then((value) {
-                                azaanBloc.setSchedularTimer();
-                                azaanBloc.formInputs.saveInfo(azaanBloc.formInputs.toString());
-                              });
-                            });
-                          },
-                          child: const Text('Save Settings'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green, // Set the background color
-                      textStyle: const TextStyle(color: textColor), // Set the text color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                      ),
-                    ),
-                    onPressed: () {
-                      azaanBloc.prayerSchedular.addNewSchedule("Magrib Azaan 1 2 3 4 5 6 7", "21-06-2023", "22:35", 0, "");
-                    },
-                    child: const Text('Play'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow, // Set the background color
-                      textStyle: const TextStyle(color: textColor), // Set the text color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                      ),
-                    ),
-                    onPressed: () {
-                      azaanBloc.prayerSchedular.pausePlayer();
-                    },
-                    child: const Text('Pause'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange, // Set the background color
-                      textStyle: const TextStyle(color: textColor), // Set the text color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                      ),
-                    ),
-                    onPressed: () {
-                      azaanBloc.prayerSchedular.resumePlayer();
-                    },
-                    child: const Text('Resume'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red, // Set the background color
-                      textStyle: const TextStyle(color: textColor), // Set the text color
-                      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0), // Set the padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Set the border radius
-                      ),
-                    ),
-                    onPressed: () {
-                      azaanBloc.prayerSchedular.stopPlayer();
-                    },
-                    child: const Text('Stop'),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

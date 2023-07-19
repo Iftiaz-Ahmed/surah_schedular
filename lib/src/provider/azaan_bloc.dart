@@ -19,9 +19,9 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List> getLatLng(String zipcode) async {
+  Future<List> getLatLng(FormInputs inputs) async {
     List list = [];
-    list = await _apiServices.getLatLng(zipcode);
+    list = await _apiServices.getLatLng(inputs);
 
     return list;
   }
@@ -40,8 +40,8 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future getTodayAzaan(var latitude, var longitude, int? method, int? school) async {
-    await _apiServices.getAzaanTime(latitude, longitude, method, school).then((value) {
+  Future getTodayAzaan(FormInputs inputs) async {
+    await _apiServices.getAzaanTime(inputs).then((value) {
       if (value != []) {
         azaanTimeStatus = true;
       } else {
@@ -85,7 +85,8 @@ class AzaanBloc extends ChangeNotifier {
     prayerSchedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
     todayAzaan.prayerTimes?.forEach((key, value) {
-      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0, "", 0);
+      prayerSchedular.addNewSchedule(
+          key, todayAzaan.gregorianDate, value, 0, "", 0);
     });
   }
 

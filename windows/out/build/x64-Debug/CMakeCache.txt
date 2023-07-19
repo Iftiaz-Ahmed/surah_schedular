@@ -92,7 +92,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=/INCREMENTAL:NO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //Path to a program.
-CMAKE_MT:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/mt.exe
+CMAKE_MT:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/mt.exe
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -104,7 +104,7 @@ CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 CMAKE_PROJECT_NAME:STATIC=surah_schedular
 
 //RC compiler
-CMAKE_RC_COMPILER:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x64/rc.exe
+CMAKE_RC_COMPILER:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64/rc.exe
 
 //Flags for Windows Resource Compiler during all build types.
 CMAKE_RC_FLAGS:STRING=-DWIN32
@@ -184,21 +184,11 @@ FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
 //Enables QUIET option for all content population
 FETCHCONTENT_QUIET:BOOL=ON
 
-//When not empty, overrides where to find pre-populated content
-// for nuget
-FETCHCONTENT_SOURCE_DIR_NUGET:PATH=
-
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
 
-//Enables UPDATE_DISCONNECTED behavior just for population of nuget
-FETCHCONTENT_UPDATES_DISCONNECTED_NUGET:BOOL=OFF
-
 //Path to a program.
-NUGET:FILEPATH=NUGET-NOTFOUND
-
-//Path to a program.
-NUGET_EXE:FILEPATH=NUGET_EXE-NOTFOUND
+NUGET:FILEPATH=C:/Users/ACER/AppData/Local/Microsoft/WinGet/Links/nuget.exe
 
 //Value Computed by CMake
 audioplayers_windows_BINARY_DIR:STATIC=D:/Client/surah_schedular/windows/out/build/x64-Debug/plugins/audioplayers_windows
@@ -210,13 +200,13 @@ audioplayers_windows_IS_TOP_LEVEL:STATIC=OFF
 audioplayers_windows_SOURCE_DIR:STATIC=D:/Client/surah_schedular/windows/flutter/ephemeral/.plugin_symlinks/audioplayers_windows/windows
 
 //Value Computed by CMake
-flutter_tts_BINARY_DIR:STATIC=D:/Client/surah_schedular/windows/out/build/x64-Debug/plugins/flutter_tts
+network_info_plus_BINARY_DIR:STATIC=D:/Client/surah_schedular/windows/out/build/x64-Debug/plugins/network_info_plus
 
 //Value Computed by CMake
-flutter_tts_IS_TOP_LEVEL:STATIC=OFF
+network_info_plus_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
-flutter_tts_SOURCE_DIR:STATIC=D:/Client/surah_schedular/windows/flutter/ephemeral/.plugin_symlinks/flutter_tts/windows
+network_info_plus_SOURCE_DIR:STATIC=D:/Client/surah_schedular/windows/flutter/ephemeral/.plugin_symlinks/network_info_plus/windows
 
 //Value Computed by CMake
 runner_BINARY_DIR:STATIC=D:/Client/surah_schedular/windows/out/build/x64-Debug/runner

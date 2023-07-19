@@ -1,3 +1,0 @@
-D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate.dir
-D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/edit_cache.dir
-D:/Client/surah_schedular/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/rebuild_cache.dir
