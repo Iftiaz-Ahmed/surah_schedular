@@ -21,7 +21,7 @@ class AzaanBloc extends ChangeNotifier {
 
   Future<List> getLatLng(FormInputs inputs) async {
     List list = [];
-    list = await _apiServices.getLatLng(inputs);
+    list = await _apiServices.getLatLng(inputs) ?? [];
 
     return list;
   }

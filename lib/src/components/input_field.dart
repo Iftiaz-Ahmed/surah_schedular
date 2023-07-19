@@ -50,38 +50,49 @@ class _InputFieldState extends State<InputField> {
       onChanged: widget.onChanged as void Function(String)?,
       autofocus: widget.autoFocus,
       enabled: widget.enabled,
-      style: Theme.of(context).textTheme.labelLarge?.apply(color: textColor),
+      style: Theme.of(context)
+          .textTheme
+          .labelLarge
+          ?.apply(color: textColor)
+          .copyWith(color: textColor, fontSize: textSize),
       decoration: InputDecoration(
         suffixIcon: widget.suffixIcon,
         contentPadding: const EdgeInsets.all(15),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         disabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.borderRadius ?? 10),
-          borderSide: BorderSide(color: widget.borderColor ?? Colors.transparent, width: 0.5),
+          borderSide: BorderSide(
+              color: widget.borderColor ?? Colors.transparent, width: 0.5),
         ),
         filled: true,
         fillColor: widget.fillColor ?? bgColor.withOpacity(0.1),
         hintStyle: const TextStyle(color: Colors.grey),
-        errorStyle: TextStyle(color: Colors.red[600], fontWeight: FontWeight.bold, fontSize: 10),
+        errorStyle: TextStyle(
+            color: Colors.red[600], fontWeight: FontWeight.bold, fontSize: 10),
         hintText: widget.hintText,
         // errorText: widget.errorText,
       ),
