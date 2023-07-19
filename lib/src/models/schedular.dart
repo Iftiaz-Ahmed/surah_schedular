@@ -50,24 +50,32 @@ class Schedular {
     return player.state;
   }
 
-  Future<void> addNewSchedule(String name, String date, String time, int scheduleType, String source, int frequency) async {
+  Future<void> addNewSchedule(String name, String date, String time,
+      int scheduleType, String source, int frequency) async {
     List convertedDate = convertDateTime(date, "-");
     List convertedTime = convertDateTime(time, ":");
 
     var currentTime = DateTime.now();
-    DateTime desiredTime = DateTime(convertedDate[2], convertedDate[1], convertedDate[0], convertedTime[0], convertedTime[1], 0);
+    DateTime desiredTime = DateTime(convertedDate[2], convertedDate[1],
+        convertedDate[0], convertedTime[0], convertedTime[1], 0);
 
     if (frequency == 0) {
       if (currentTime.isAfter(desiredTime)) {
         return;
       }
     } else if (frequency == 1) {
-      desiredTime = DateTime(currentTime.year, currentTime.month, currentTime.day, convertedTime[0], convertedTime[1], 0);
+      desiredTime = DateTime(currentTime.year, currentTime.month,
+          currentTime.day, convertedTime[0], convertedTime[1], 0);
     } else if (frequency == 2) {
       int todayWeekday = currentTime.weekday;
       int weekday = desiredTime.weekday;
       if (todayWeekday == weekday) {
-        desiredTime = DateTime(currentTime.year, currentTime.month, currentTime.day, convertedTime[0], convertedTime[1], 0);
+        desiredTime = DateTime(currentTime.year, currentTime.month,
+            currentTime.day, convertedTime[0], convertedTime[1], 0);
+        if (currentTime.isAfter(desiredTime)) {
+          desiredTime = desiredTime.add(Duration(days: 7));
+          print(desiredTime);
+        }
       } else {
         return;
       }
@@ -87,7 +95,14 @@ class Schedular {
       startTimer(duration, task);
       print("${task.name} scheduled at ${task.date}, ${task.time}");
     } else {
-      Task task = Task(name: name, date: date, time: time, taskTimer: null, frequency: frequency, sourceType: scheduleType, source: source);
+      Task task = Task(
+          name: name,
+          date: date,
+          time: time,
+          taskTimer: null,
+          frequency: frequency,
+          sourceType: scheduleType,
+          source: source);
       startTimer(duration, task);
       print("${task.name} scheduled at ${task.date}, ${task.time}");
     }
@@ -159,7 +174,8 @@ class Schedular {
       for (var item in items) {
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;
         if (jsonMap['sourceType'] == 1) {
-          addNewSchedule(jsonMap['name'], jsonMap['date'], jsonMap['time'], jsonMap['sourceType'], jsonMap['source'], jsonMap['frequency']);
+          addNewSchedule(jsonMap['name'], jsonMap['date'], jsonMap['time'],
+              jsonMap['sourceType'], jsonMap['source'], jsonMap['frequency']);
         }
       }
     } catch (e) {}

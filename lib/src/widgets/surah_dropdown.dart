@@ -38,7 +38,7 @@ class _SurahDropdownState extends State<SurahDropdown> {
           padding: EdgeInsets.all(10.0),
           child: Text(
             'Surah',
-            style: TextStyle(color: textColor, fontSize: 20),
+            style: TextStyle(color: textColor, fontSize: textSize),
           ),
         ),
         const SizedBox(
@@ -84,7 +84,10 @@ class _SurahDropdownState extends State<SurahDropdown> {
                     value: value.number,
                     child: Text(
                       "${value.number}. ${value.name} - ${value.nameMeaning}",
-                      style: const TextStyle(color: textColor, fontSize: 20, overflow: TextOverflow.ellipsis),
+                      style: const TextStyle(
+                          color: textColor,
+                          fontSize: textSize,
+                          overflow: TextOverflow.ellipsis),
                     ),
                     onTap: () {
                       setState(() {
