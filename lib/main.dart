@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:dart_chromecast/casting/cast_media.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +7,26 @@ import 'package:surah_schedular/src/provider/azaan_bloc.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
 import 'package:surah_schedular/src/utils/theme_helpers.dart';
 import 'package:surah_schedular/src/widgets/home.dart';
-import 'package:window_size/window_size.dart';
+import 'package:window_manager/window_manager.dart';
 
 final Logger log = new Logger('Chromecast CLI');
 
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Must add this line.
+  await windowManager.ensureInitialized();
 
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowTitle('Digital Azaan');
-    setWindowMinSize(const Size(1650, 920));
-    setWindowMaxSize(Size.infinite);
-  }
+  WindowOptions windowOptions = const WindowOptions(
+    minimumSize: Size(1250, 720),
+    size: Size(1250, 720),
+    center: true,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.normal,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<AzaanBloc>.value(value: AzaanBloc()),
