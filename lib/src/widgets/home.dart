@@ -85,8 +85,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           _cityController.text = formInput.city ?? '';
           _countryController.text = formInput.country ?? '';
           azaanBloc.getTodayAzaan(formInput).then((value) {
-            azaanBloc.setAzaanTimes(
-                "${azaanBloc.selectedAdhan['directory']}${azaanBloc.selectedAdhan['name']}");
+            azaanBloc.setAzaanTimes(azaanBloc.selectedAdhan['path']);
           });
         }
       });
@@ -267,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                                       .getTodayAzaan(azaanBloc.formInputs)
                                       .then((value) {
                                     azaanBloc.setAzaanTimes(
-                                        "${azaanBloc.selectedAdhan['directory']}${azaanBloc.selectedAdhan['name']}");
+                                        azaanBloc.selectedAdhan['path']);
                                     azaanBloc.formInputs.saveInfo(
                                         azaanBloc.formInputs.toString());
                                   });

@@ -147,7 +147,8 @@ class AzaanBloc extends ChangeNotifier {
 
   Map _selectedAdhan = {
     "name": "Masjid Al-Haram in Mecca.mp3",
-    "directory": "assets/audio/"
+    "path": "assets/audio/Masjid Al-Haram in Mecca.mp3",
+    "type": 0
   };
   get selectedAdhan => _selectedAdhan;
   set selectedAdhan(var value) {

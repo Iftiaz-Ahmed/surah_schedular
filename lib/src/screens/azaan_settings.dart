@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 import '../provider/azaan_bloc.dart';
 import '../utils/color_const.dart';
@@ -15,6 +17,10 @@ class AzaanSettings extends StatefulWidget {
 
 class _AzaanSettingsState extends State<AzaanSettings> {
   final player = AudioPlayer();
+  int count = 0;
+  int type = 0;
+  List<PlatformFile>? _audioFiles;
+  String defaultAdhan = "";
 
   @override
   void initState() {
@@ -22,9 +28,47 @@ class _AzaanSettingsState extends State<AzaanSettings> {
     super.initState();
   }
 
+  Future<void> _pickAudioFiles(AzaanBloc azaanBloc) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.audio,
+        allowMultiple: false,
+      );
+
+      if (result != null) {
+        setState(() {
+          _audioFiles = result.files;
+          print(_audioFiles?.first.name);
+          azaanBloc.selectedAdhan['name'] = _audioFiles?.first.name;
+          azaanBloc.selectedAdhan['path'] = _audioFiles?.first.path;
+          azaanBloc.selectedAdhan['type'] = 1;
+        });
+
+        final LocalStorage storage = LocalStorage('surah_schedular.json');
+        await storage.setItem('selectedAdhan', azaanBloc.selectedAdhan);
+      }
+    } catch (e) {
+      print("Error picking audio files: $e");
+    }
+  }
+
+  void initialize(AzaanBloc azaanBloc) {
+    if (count == 0) {
+      count++;
+
+      type = azaanBloc.selectedAdhan['type'];
+      if (type == 0) {
+        defaultAdhan = azaanBloc.selectedAdhan['name'];
+      } else {
+        defaultAdhan = azaanBloc.adhanList[0];
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    initialize(azaanBloc);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -44,36 +88,112 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                 "Choose Azaan",
                 style: TextStyle(color: textColor, fontSize: textSize + 5),
               ),
-              Flexible(
-                child: DropdownButton<String>(
-                  dropdownColor: Colors.black,
-                  autofocus: false,
-                  focusColor: Colors.transparent,
-                  value: azaanBloc.selectedAdhan['name'],
-                  onChanged: (newValue) async {
-                    setState(() {
-                      azaanBloc.selectedAdhan['name'] = newValue!;
-                      azaanBloc.selectedAdhan['directory'] = "assets/audio/";
-                    });
-
-                    final LocalStorage storage =
-                        LocalStorage('surah_schedular.json');
-                    await storage.setItem(
-                        'selectedAdhan', azaanBloc.selectedAdhan);
-                  },
-                  items: azaanBloc.adhanList
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
+              const SizedBox(
+                height: 30,
+              ),
+              ToggleSwitch(
+                activeBgColor: const [Colors.green],
+                inactiveBgColor: bgColor,
+                initialLabelIndex: type,
+                totalSwitches: 2,
+                labels: const ['Library', 'Custom'],
+                onToggle: (index) {
+                  setState(() {
+                    type = index!;
+                    if (type == 0) {
+                      if (azaanBloc.selectedAdhan['type'] == 0) {
+                        defaultAdhan = azaanBloc.selectedAdhan['name'] ??
+                            azaanBloc.adhanList[0];
+                      } else {
+                        defaultAdhan = azaanBloc.adhanList[0];
+                      }
+                    }
+                  });
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              type == 0
+                  ? Flexible(
+                      child: DropdownButton<String>(
                         style: const TextStyle(
                             color: textColor, fontSize: textSize),
+                        dropdownColor: Colors.black,
+                        autofocus: false,
+                        focusColor: Colors.transparent,
+                        value: defaultAdhan,
+                        onChanged: (newValue) async {
+                          setState(() {
+                            defaultAdhan = newValue!;
+                            azaanBloc.selectedAdhan['name'] = newValue!;
+                            azaanBloc.selectedAdhan['path'] =
+                                "assets/audio/$newValue";
+                            azaanBloc.selectedAdhan['type'] = 0;
+                          });
+
+                          final LocalStorage storage =
+                              LocalStorage('surah_schedular.json');
+                          await storage.setItem(
+                              'selectedAdhan', azaanBloc.selectedAdhan);
+                        },
+                        items: azaanBloc.adhanList
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  color: textColor, fontSize: textSize),
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
+                    )
+                  : Flexible(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                    color:
+                                        Colors.green), // Set the border color
+                                backgroundColor: Colors
+                                    .transparent, // Set the background color// Set the padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Set the border radius
+                                ),
+                              ),
+                              onPressed: () {
+                                _pickAudioFiles(azaanBloc);
+                              },
+                              child: const Text(
+                                'Select Azaan File',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: textSize - 2),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          azaanBloc.selectedAdhan['type'] == 1
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(azaanBloc.selectedAdhan['name'],
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          fontSize: textSize - 4)),
+                                )
+                              : const Text('')
+                        ],
+                      ),
+                    ),
               Flexible(
                   child: Row(
                 children: [
@@ -84,8 +204,8 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                       size: textSize + 10,
                     ),
                     onPressed: () {
-                      player.play(DeviceFileSource(
-                          "${azaanBloc.selectedAdhan['directory']}${azaanBloc.selectedAdhan['name']}"));
+                      player.play(
+                          DeviceFileSource(azaanBloc.selectedAdhan['path']));
                     },
                   ),
                   IconButton(
