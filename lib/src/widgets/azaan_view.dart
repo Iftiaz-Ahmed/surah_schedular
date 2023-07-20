@@ -78,10 +78,12 @@ class AzaanView extends StatelessWidget {
                               child: Text(
                                 'Prayer timings showing for ' +
                                     azaanBloc.formInputs.city +
-                                    (azaanBloc.formInputs.country != ''
+                                    (azaanBloc.formInputs.country != '' &&
+                                            azaanBloc.formInputs.country != null
                                         ? ', ${azaanBloc.formInputs.country}'
                                         : '') +
-                                    (azaanBloc.formInputs.zipcode != ''
+                                    (azaanBloc.formInputs.zipcode != '' &&
+                                            azaanBloc.formInputs.zipcode != null
                                         ? ', ${azaanBloc.formInputs.zipcode} '
                                         : ''),
                                 style: const TextStyle(

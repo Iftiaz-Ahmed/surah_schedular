@@ -44,7 +44,7 @@ class _MethodDropdownState extends State<MethodDropdown> {
               List<PrayerMethod> methods = azaanBloc.prayerMethodList ?? [];
               if (selectedMethodId == null && methods.isNotEmpty) {
                 print(azaanBloc.formInputs.method);
-                selectedMethodId = azaanBloc.formInputs.method;
+                selectedMethodId = azaanBloc.formInputs.method ?? 2;
               }
 
               return DropdownButton<int>(

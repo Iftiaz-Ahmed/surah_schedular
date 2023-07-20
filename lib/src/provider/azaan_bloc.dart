@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:surah_schedular/src/models/formInputs.dart';
 import 'package:surah_schedular/src/models/prayerMethod.dart';
@@ -133,5 +136,40 @@ class AzaanBloc extends ChangeNotifier {
     }
 
     return format.format(calculatedTime);
+  }
+
+  List _adhanList = [];
+  get adhanList => _adhanList;
+  set adhanList(var value) {
+    _adhanList = value;
+    notifyListeners();
+  }
+
+  Map _selectedAdhan = {
+    "name": "Masjid Al-Haram in Mecca.mp3",
+    "directory": "assets/audio/"
+  };
+  get selectedAdhan => _selectedAdhan;
+  set selectedAdhan(var value) {
+    _selectedAdhan = value;
+    notifyListeners();
+  }
+
+  Future<void> getAdhanFileNames() async {
+    List<String> audioFileNames = [];
+    try {
+      final manifestContent = await rootBundle.loadString('AssetManifest.json');
+      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
+      for (String key in manifestMap.keys) {
+        if (key.contains('assets/audio') && key.endsWith('.mp3')) {
+          audioFileNames.add(key.split('/').last);
+        }
+      }
+    } catch (e) {
+      print("Error reading audio files: $e");
+    }
+    print(audioFileNames);
+    adhanList = audioFileNames;
   }
 }

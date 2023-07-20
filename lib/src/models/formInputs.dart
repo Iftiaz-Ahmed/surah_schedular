@@ -62,4 +62,12 @@ class FormInputs {
       });
     } catch (e) {}
   }
+
+  bool isEmpty() {
+    if (zipcode == null && city == null && country == null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

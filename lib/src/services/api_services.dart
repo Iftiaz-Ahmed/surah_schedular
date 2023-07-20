@@ -20,7 +20,6 @@ class ApiServices {
         final jsonResponse = jsonDecode(response.body);
 
         List data = jsonResponse['data'];
-        print("city is " + inputs.city);
         if (inputs.city.toString().isEmpty || inputs.city == null) {
           list.add(data[0]["latitude"]);
           list.add(data[0]["longitude"]);
@@ -50,20 +49,20 @@ class ApiServices {
     try {
       DateTime date = DateTime.now();
       String formattedDate = DateFormat('dd-MM-yyyy').format(date);
-
-      final response = inputs.latitude != null ||
-              inputs.latitude.toString().isEmpty
-          ? await http.get(Uri.parse(
-              'http://api.aladhan.com/v1/timings/$formattedDate?latitude=${inputs.latitude}&longitude=${inputs.longitude}&method=${inputs.method}&school=${inputs.school}'))
-          : await http.get(Uri.parse(
-              'http://api.aladhan.com/v1/calendarByCity/${date.year}/${date.month}?city=${inputs.city}&country=${inputs.country}&method=${inputs.method}&school=${inputs.school}'));
+      var response;
+      if (inputs.latitude.toString() != "null") {
+        response = await http.get(Uri.parse(
+            'http://api.aladhan.com/v1/timings/$formattedDate?latitude=${inputs.latitude}&longitude=${inputs.longitude}&method=${inputs.method}&school=${inputs.school}'));
+      } else {
+        response = await http.get(Uri.parse(
+            'http://api.aladhan.com/v1/timingsByCity?city=${inputs.city}&country=${inputs.country}&method=${inputs.method}&school=${inputs.school}'));
+      }
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-
         todayAzaan.date = jsonResponse['data']['date']['readable'];
         todayAzaan.prayerTimes = {
-          "Fajr": jsonResponse['data']['timings']['Fajr'].toString(),
+          "Fajr": jsonResponse['data']['timings']['Fajr'],
           "Dhuhr": jsonResponse['data']['timings']['Dhuhr'],
           "Asr": jsonResponse['data']['timings']['Asr'],
           "Maghrib": jsonResponse['data']['timings']['Maghrib'],

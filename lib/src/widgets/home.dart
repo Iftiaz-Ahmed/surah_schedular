@@ -1,6 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
+import 'package:surah_schedular/src/screens/azaan_settings.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -50,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   @override
   Future<void> onWindowMinimize() async {
-    await windowManager.hide();
+    // await windowManager.hide();
   }
 
   @override
@@ -60,19 +62,39 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     // do something
   }
 
+  Future<Map> getSavedAdhanName() async {
+    Map adhan = {};
+    try {
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
+      await storage.ready.then((value) {
+        adhan = storage.getItem('selectedAdhan');
+      });
+    } catch (e) {}
+    return adhan;
+  }
+
   Future<void> initializeData(context) async {
     if (count == 0) {
       count++;
       AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+
       final FormInputs formInput = azaanBloc.formInputs;
       await formInput.retrieveInfo().then((value) {
-        _zipController.text = formInput.zipcode ?? '';
-        _cityController.text = formInput.city ?? '';
-        _countryController.text = formInput.country ?? '';
-        azaanBloc.getTodayAzaan(formInput).then((value) {
-          azaanBloc.setSchedularTimer();
-        });
+        if (!formInput.isEmpty()) {
+          _zipController.text = formInput.zipcode ?? '';
+          _cityController.text = formInput.city ?? '';
+          _countryController.text = formInput.country ?? '';
+          azaanBloc.getTodayAzaan(formInput).then((value) {
+            azaanBloc.setSchedularTimer();
+          });
+        }
       });
+      await getSavedAdhanName().then((value) {
+        if (value.isNotEmpty) {
+          azaanBloc.selectedAdhan = value;
+        }
+      });
+      await azaanBloc.getAdhanFileNames();
     }
   }
 
@@ -114,6 +136,19 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
             ),
           ),
         ],
+      ),
+      floatingActionButton: IconButton(
+        icon: const Icon(
+          Icons.settings,
+          color: textColor,
+          size: textSize + 10,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AzaanSettings()),
+          );
+        },
       ),
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -177,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                                 keyboardType: TextInputType.text,
                                 onChanged: (value) {
                                   setState(() {
-                                    azaanBloc.formInputs.city = value;
+                                    azaanBloc.formInputs.country = value;
                                   });
                                 },
                                 controller: _countryController,
@@ -213,7 +248,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                                 azaanBloc
                                     .getLatLng(azaanBloc.formInputs)
                                     .then((value) {
-                                  print("value $value");
                                   if (value.isNotEmpty) {
                                     setState(() {
                                       azaanBloc.formInputs.latitude = value[0];
@@ -224,7 +258,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                                       _countryController.text = value[3];
                                     });
                                   }
-
+                                  azaanBloc.formInputs.method =
+                                      azaanBloc.formInputs.method ?? 2;
+                                  azaanBloc.formInputs.school =
+                                      azaanBloc.formInputs.school ?? 1;
                                   azaanBloc
                                       .getTodayAzaan(azaanBloc.formInputs)
                                       .then((value) {
