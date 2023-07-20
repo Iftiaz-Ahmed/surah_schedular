@@ -84,12 +84,12 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setSchedularTimer() async {
+  Future<void> setAzaanTimes(source) async {
     prayerSchedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
     todayAzaan.prayerTimes?.forEach((key, value) {
       prayerSchedular.addNewSchedule(
-          key, todayAzaan.gregorianDate, value, 0, "", 0);
+          key, todayAzaan.gregorianDate, value, 0, source, 0);
     });
   }
 

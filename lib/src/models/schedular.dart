@@ -36,7 +36,7 @@ class Schedular {
       //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
       // });
       if (task.sourceType == 0) {
-        player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
+        player.play(DeviceFileSource(task.source));
       } else {
         player.play(UrlSource(task.source));
       }
@@ -91,7 +91,7 @@ class Schedular {
           taskTimer: null,
           frequency: frequency,
           sourceType: scheduleType,
-          source: "assets/audio/makkah_adhan.mp3");
+          source: source);
       startTimer(duration, task);
       print("${task.name} scheduled at ${task.date}, ${task.time}");
     } else {
