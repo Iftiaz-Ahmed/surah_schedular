@@ -92,7 +92,8 @@ class Schedular {
           taskTimer: null,
           frequency: frequency,
           sourceType: scheduleType,
-          source: source);
+          source: source,
+          volume: volume);
       startTimer(duration, task, volume);
     } else {
       Task task = Task(
@@ -102,7 +103,8 @@ class Schedular {
           taskTimer: null,
           frequency: frequency,
           sourceType: scheduleType,
-          source: source);
+          source: source,
+          volume: volume);
       startTimer(duration, task, volume);
     }
     scheduleCount++;
@@ -180,7 +182,7 @@ class Schedular {
               jsonMap['sourceType'],
               jsonMap['source'],
               jsonMap['frequency'],
-              70.0);
+              jsonMap['volume']);
         }
       }
     } catch (e) {}

@@ -26,6 +26,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
   int prayerIndex = 1;
   int unitIndex = 1;
   int frequencyIndex = 0;
+  double volume = 80.0;
   TextEditingController _timeTextController = TextEditingController();
   TextEditingController _scheduledDate = TextEditingController();
   TextEditingController _scheduledTime = TextEditingController();
@@ -110,21 +111,25 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                       style: const TextStyle(color: textColor),
                                     ),
                                   ),
+                                  Flexible(
+                                    child: Text(
+                                      "${azaanBloc.surahSchedular.tasks[index].volume.toInt()}%",
+                                      style: const TextStyle(color: textColor),
+                                    ),
+                                  ),
                                 ],
                               ),
                               trailing: IconButton(
                                 onPressed: () {
-                                  azaanBloc.surahSchedular.deleteTask(index);
+                                  setState(() {
+                                    azaanBloc.surahSchedular.deleteTask(index);
+                                  });
                                 },
                                 icon: const Icon(
                                   Icons.clear,
                                   color: Colors.red,
                                 ),
                               ),
-                              onTap: () {
-                                // Handle item tap
-                                print('Tapped: ');
-                              },
                             );
                           }),
                     )
@@ -168,7 +173,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SurahDropdown(callback: updateData),
+                  SizedBox(
+                      height: 70, child: SurahDropdown(callback: updateData)),
                   const SizedBox(
                     height: 30,
                   ),
@@ -501,6 +507,38 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                       ),
                     ],
                   ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Flexible(
+                          child: Text(
+                        "Volume",
+                        style: TextStyle(color: textColor, fontSize: textSize),
+                      )),
+                      Flexible(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Slider(
+                            label: volume.toString(),
+                            thumbColor: textColor,
+                            activeColor: textColor,
+                            value: volume,
+                            min: 0,
+                            max: 100,
+                            divisions: 10,
+                            onChanged: (double value) async {
+                              setState(() {
+                                volume = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -535,7 +573,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               1,
               selectedSurah.source,
               frequencyIndex,
-              70.0);
+              volume);
         },
         child: const Text(
           'Schedule',

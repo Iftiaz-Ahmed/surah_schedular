@@ -9,6 +9,7 @@ class Task {
   int frequency;
   int sourceType; // 0 device, 1 online
   var source;
+  double volume;
 
   Task(
       {required this.name,
@@ -17,7 +18,8 @@ class Task {
       required this.taskTimer,
       required this.frequency,
       required this.sourceType,
-      required this.source});
+      required this.source,
+      required this.volume});
 
   Map<String, dynamic> toJson() {
     return {
@@ -27,6 +29,7 @@ class Task {
       'frequency': frequency,
       'sourceType': sourceType,
       'source': source,
+      'volume': volume
     };
   }
 
