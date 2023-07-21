@@ -534,7 +534,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               _scheduledTime.text,
               1,
               selectedSurah.source,
-              frequencyIndex);
+              frequencyIndex,
+              70.0);
         },
         child: const Text(
           'Schedule',

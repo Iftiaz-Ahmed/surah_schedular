@@ -73,6 +73,17 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     return adhan;
   }
 
+  Future<List> getSavedAzaanVolumes() async {
+    List volumes = [];
+    try {
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
+      await storage.ready.then((value) {
+        volumes = storage.getItem('azaanVolumes');
+      });
+    } catch (e) {}
+    return volumes;
+  }
+
   Future<void> initializeData(context) async {
     if (count == 0) {
       count++;
@@ -95,6 +106,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         }
       });
       await azaanBloc.getAdhanFileNames();
+      azaanBloc.azaanVolumes = await getSavedAzaanVolumes();
     }
   }
 

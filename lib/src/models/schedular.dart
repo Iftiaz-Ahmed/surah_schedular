@@ -28,13 +28,14 @@ class Schedular {
   //   await flutterTts.speak(text);
   // }
 
-  void startTimer(Duration duration, Task task) {
+  void startTimer(Duration duration, Task task, double volume) {
     Timer newTimer = Timer(duration, () async {
       print('Task scheduled at ${task.time} on ${task.date}');
       print("Executed at ${DateTime.now()}");
       // await textToSpeech(task.name).then((value) {
       //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
       // });
+      player.setVolume(volume / 100);
       if (task.sourceType == 0) {
         player.play(DeviceFileSource(task.source));
       } else {
@@ -51,7 +52,7 @@ class Schedular {
   }
 
   Future<void> addNewSchedule(String name, String date, String time,
-      int scheduleType, String source, int frequency) async {
+      int scheduleType, String source, int frequency, double volume) async {
     List convertedDate = convertDateTime(date, "-");
     List convertedTime = convertDateTime(time, ":");
 
@@ -92,8 +93,7 @@ class Schedular {
           frequency: frequency,
           sourceType: scheduleType,
           source: source);
-      startTimer(duration, task);
-      print("${task.name} scheduled at ${task.date}, ${task.time}");
+      startTimer(duration, task, volume);
     } else {
       Task task = Task(
           name: name,
@@ -103,8 +103,7 @@ class Schedular {
           frequency: frequency,
           sourceType: scheduleType,
           source: source);
-      startTimer(duration, task);
-      print("${task.name} scheduled at ${task.date}, ${task.time}");
+      startTimer(duration, task, volume);
     }
     scheduleCount++;
     saveTasks();
@@ -174,8 +173,14 @@ class Schedular {
       for (var item in items) {
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;
         if (jsonMap['sourceType'] == 1) {
-          addNewSchedule(jsonMap['name'], jsonMap['date'], jsonMap['time'],
-              jsonMap['sourceType'], jsonMap['source'], jsonMap['frequency']);
+          addNewSchedule(
+              jsonMap['name'],
+              jsonMap['date'],
+              jsonMap['time'],
+              jsonMap['sourceType'],
+              jsonMap['source'],
+              jsonMap['frequency'],
+              70.0);
         }
       }
     } catch (e) {}
