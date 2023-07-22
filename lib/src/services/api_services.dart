@@ -74,6 +74,8 @@ class ApiServices {
         todayAzaan.getAzaanTime();
 
         return todayAzaan;
+      } else {
+        print("Prayer Timings not found");
       }
     } on HttpException {
       print("http exception");

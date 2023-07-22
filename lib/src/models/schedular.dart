@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 // import 'package:flutter_tts/flutter_tts.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:surah_schedular/src/models/task.dart';
@@ -35,6 +36,7 @@ class Schedular {
       // await textToSpeech(task.name).then((value) {
       //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
       // });
+      await FlutterVolumeController.setVolume(volume / 100);
       player.setVolume(volume / 100);
       if (task.sourceType == 0) {
         player.play(DeviceFileSource(task.source));

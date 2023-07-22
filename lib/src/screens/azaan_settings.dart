@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -217,7 +218,8 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                         color: Colors.green,
                         size: textSize + 10,
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        await FlutterVolumeController.setVolume(maxValue / 100);
                         player.setVolume(maxValue / 100);
                         player.play(
                             DeviceFileSource(azaanBloc.selectedAdhan['path']));

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -84,6 +86,18 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     return volumes;
   }
 
+  void scheduleDailyFunctionExecution(context) {
+    DateTime now = DateTime.now();
+    DateTime nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    Duration durationUntilMidnight = nextMidnight.difference(now);
+
+    Timer(durationUntilMidnight, () {
+      count = 0;
+      print("Executing functions at 12:00 AM");
+      initializeData(context);
+    });
+  }
+
   Future<void> initializeData(context) async {
     if (count == 0) {
       count++;
@@ -106,7 +120,13 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         }
       });
       await azaanBloc.getAdhanFileNames();
-      azaanBloc.azaanVolumes = await getSavedAzaanVolumes();
+      await getSavedAzaanVolumes().then((value) {
+        if (value.isNotEmpty) {
+          azaanBloc.azaanVolumes = value;
+        }
+      });
+
+      scheduleDailyFunctionExecution(context);
     }
   }
 

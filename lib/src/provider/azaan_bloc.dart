@@ -14,6 +14,13 @@ import '../models/surah.dart';
 class AzaanBloc extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
 
+  List _azaanVolumes = [70.0, 70.0, 70.0, 70.0, 70.0];
+  get azaanVolumes => _azaanVolumes;
+  set azaanVolumes(var value) {
+    _azaanVolumes = value;
+    notifyListeners();
+  }
+
   FormInputs _formInputs = FormInputs();
   get formInputs => _formInputs;
   set formInputs(var value) {
@@ -88,6 +95,7 @@ class AzaanBloc extends ChangeNotifier {
     Map azaan = {"Fajr": 0, "Dhuhr": 1, "Asr": 2, "Maghrib": 3, "Isha": 4};
     prayerSchedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
+
     todayAzaan.prayerTimes?.forEach((key, value) {
       prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0,
           source, 0, azaanVolumes[azaan[key]]);
@@ -171,16 +179,6 @@ class AzaanBloc extends ChangeNotifier {
     } catch (e) {
       print("Error reading audio files: $e");
     }
-    print(audioFileNames);
     adhanList = audioFileNames;
   }
-
-  List _azaanVolumes = [70.0, 70.0, 70.0, 70.0, 70.0];
-  get azaanVolumes => _azaanVolumes;
-  set azaanVolumes(var value) {
-    _azaanVolumes = value;
-    notifyListeners();
-  }
-
-  saveAzaanVolume() {}
 }

@@ -17,6 +17,7 @@ class ScheduleSurah extends StatefulWidget {
 }
 
 class _ScheduleSurahState extends State<ScheduleSurah> {
+  int count = 0;
   Surah selectedSurah = Surah(number: 0, name: "", nameMeaning: "", source: "");
   List<String> prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   List<String> frequency = ['Once', 'Daily', 'Weekly'];
@@ -45,9 +46,17 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
     _scheduledTime.text = DateFormat('HH:mm').format(DateTime.now());
   }
 
+  void initialize(AzaanBloc azaanBloc) {
+    if (count == 0) {
+      count++;
+      azaanBloc.surahSchedular.retrieveTasks();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    initialize(azaanBloc);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
