@@ -17,7 +17,6 @@ class ScheduleSurah extends StatefulWidget {
 }
 
 class _ScheduleSurahState extends State<ScheduleSurah> {
-  int count = 0;
   Surah selectedSurah = Surah(number: 0, name: "", nameMeaning: "", source: "");
   List<String> prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   List<String> frequency = ['Once', 'Daily', 'Weekly'];
@@ -46,17 +45,9 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
     _scheduledTime.text = DateFormat('HH:mm').format(DateTime.now());
   }
 
-  void initialize(AzaanBloc azaanBloc) {
-    if (count == 0) {
-      count++;
-      azaanBloc.surahSchedular.retrieveTasks();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-    initialize(azaanBloc);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -72,7 +63,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
         child: Row(
           children: [
             Expanded(
-              flex: 1,
+              flex: 2,
               child: azaanBloc.surahSchedular.tasks.length > 0
                   ? Container(
                       height: MediaQuery.of(context).size.height,
@@ -95,7 +86,9 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                     child: Text(
                                       azaanBloc
                                           .surahSchedular.tasks[index].name,
-                                      style: const TextStyle(color: textColor),
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
                                   Flexible(
@@ -103,27 +96,35 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                     child: Text(
                                       azaanBloc
                                           .surahSchedular.tasks[index].date,
-                                      style: const TextStyle(color: textColor),
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
                                   Flexible(
                                     child: Text(
                                       azaanBloc
                                           .surahSchedular.tasks[index].time,
-                                      style: const TextStyle(color: textColor),
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
                                   Flexible(
                                     child: Text(
                                       frequency[azaanBloc.surahSchedular
                                           .tasks[index].frequency],
-                                      style: const TextStyle(color: textColor),
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
                                   Flexible(
                                     child: Text(
                                       "${azaanBloc.surahSchedular.tasks[index].volume.toInt()}%",
-                                      style: const TextStyle(color: textColor),
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
                                 ],
@@ -178,7 +179,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                     ),
             ),
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -374,7 +375,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                   ),
                                 ),
                                 const SizedBox(
-                                  width: 30,
+                                  width: 3,
                                 ),
                                 ToggleSwitch(
                                   activeBgColor: const [Colors.green],
