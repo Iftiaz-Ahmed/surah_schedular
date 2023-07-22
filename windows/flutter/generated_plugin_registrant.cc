@@ -9,6 +9,7 @@
 #include <audioplayers_windows/audioplayers_windows_plugin.h>
 #include <flutter_volume_controller/flutter_volume_controller_plugin_c_api.h>
 #include <screen_retriever/screen_retriever_plugin.h>
+#include <tray_manager/tray_manager_plugin.h>
 #include <window_manager/window_manager_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
@@ -18,6 +19,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FlutterVolumeControllerPluginCApi"));
   ScreenRetrieverPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ScreenRetrieverPlugin"));
+  TrayManagerPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("TrayManagerPlugin"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
 }

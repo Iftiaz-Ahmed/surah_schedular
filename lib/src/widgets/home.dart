@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/screens/azaan_settings.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../Components/input_field.dart';
@@ -25,7 +27,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WindowListener {
+class _MyHomePageState extends State<MyHomePage>
+    with WindowListener, TrayListener {
   int count = 0;
   final TextEditingController _zipController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -37,31 +40,42 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   void initState() {
     super.initState();
     windowManager.addListener(this);
+    trayManager.addListener(this);
     _init();
   }
 
   void _init() async {
-    // Add this line to override the default close handler
     await windowManager.setPreventClose(true);
+    await trayManager.setIcon(
+      Platform.isWindows
+          ? 'assets/images/tray_icon.ico'
+          : 'assets/images/tray_icon.png',
+    );
     setState(() {});
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
+    trayManager.removeListener(this);
     super.dispose();
   }
 
   @override
   Future<void> onWindowMinimize() async {
-    // await windowManager.hide();
+    await windowManager.hide();
   }
 
   @override
-  void onWindowFocus() {
-    // Make sure to call once.
+  void onTrayIconMouseDown() async {
+    bool isVisible = await windowManager.isVisible();
+    if (!isVisible) {
+      windowManager.restore();
+      await windowManager.show();
+    } else {
+      await windowManager.focus();
+    }
     setState(() {});
-    // do something
   }
 
   Future<Map> getSavedAdhanName() async {

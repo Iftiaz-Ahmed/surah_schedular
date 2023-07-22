@@ -43,6 +43,7 @@ dependencies:
   win32: ^5.0.5
   file_picker: ^5.3.2
   flutter_volume_controller: ^1.2.7
+  tray_manager: ^0.2.0
   #  flutter_tts: ^3.4.0
 
   # The following adds the Cupertino Icons font to your application.
@@ -69,6 +70,7 @@ flutter:
 
   assets:
     - assets/audio/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
   flutter_volume_controller
   screen_retriever
+  tray_manager
   window_manager
 )
 
