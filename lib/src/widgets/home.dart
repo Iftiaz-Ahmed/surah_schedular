@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   void scheduleDailyFunctionExecution(AzaanBloc azaanBloc) {
     DateTime now = DateTime.now();
-    DateTime nextMidnight = DateTime(now.year, now.month, now.day+1);
+    DateTime nextMidnight = DateTime(now.year, now.month, now.day + 1);
     Duration durationUntilMidnight = nextMidnight.difference(now);
     if (!durationUntilMidnight.isNegative) {
       Timer(durationUntilMidnight, () {
