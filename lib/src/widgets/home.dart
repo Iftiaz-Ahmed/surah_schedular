@@ -100,23 +100,22 @@ class _MyHomePageState extends State<MyHomePage>
     return volumes;
   }
 
-  void scheduleDailyFunctionExecution(context) {
+  void scheduleDailyFunctionExecution(AzaanBloc azaanBloc) {
     DateTime now = DateTime.now();
-    DateTime nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    DateTime nextMidnight = DateTime(now.year, now.month, now.day+1);
     Duration durationUntilMidnight = nextMidnight.difference(now);
-
-    Timer(durationUntilMidnight, () {
-      count = 0;
-      print("Executing functions at 12:00 AM");
-      initializeData(context);
-    });
+    if (!durationUntilMidnight.isNegative) {
+      Timer(durationUntilMidnight, () {
+        count = 0;
+        print("Executing functions at 12:00 AM");
+        initializeData(azaanBloc);
+      });
+    }
   }
 
-  Future<void> initializeData(context) async {
+  Future<void> initializeData(AzaanBloc azaanBloc) async {
     if (count == 0) {
       count++;
-      AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-
       final FormInputs formInput = azaanBloc.formInputs;
       await formInput.retrieveInfo().then((value) {
         if (!formInput.isEmpty()) {
@@ -140,14 +139,14 @@ class _MyHomePageState extends State<MyHomePage>
         }
       });
 
-      scheduleDailyFunctionExecution(context);
+      scheduleDailyFunctionExecution(azaanBloc);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    initializeData(context);
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    initializeData(azaanBloc);
 
     return Scaffold(
       appBar: AppBar(
