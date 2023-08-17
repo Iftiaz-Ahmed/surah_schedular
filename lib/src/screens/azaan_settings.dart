@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
+import 'package:surah_schedular/src/models/adhan.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../provider/azaan_bloc.dart';
@@ -21,7 +22,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
   int count = 0;
   int type = 0;
   List<PlatformFile>? _audioFiles;
-  String defaultAdhan = "";
+  late AdhanItem defaultAdhan;
   double maxValue = 50.0;
   int prayerIndex = 0;
 
@@ -42,13 +43,15 @@ class _AzaanSettingsState extends State<AzaanSettings> {
         setState(() {
           _audioFiles = result.files;
           print(_audioFiles?.first.name);
-          azaanBloc.selectedAdhan['name'] = _audioFiles?.first.name;
-          azaanBloc.selectedAdhan['path'] = _audioFiles?.first.path;
-          azaanBloc.selectedAdhan['type'] = 1;
+          azaanBloc.selectedAdhan = AdhanItem(
+              name: _audioFiles!.first.name.toString(),
+              path: _audioFiles!.first.path.toString(),
+              type: 0);
         });
 
         final LocalStorage storage = LocalStorage('surah_schedular.json');
-        await storage.setItem('selectedAdhan', azaanBloc.selectedAdhan);
+        await storage.setItem(
+            'selectedAdhan', azaanBloc.selectedAdhan.toJson());
       }
     } catch (e) {
       print("Error picking audio files: $e");
@@ -58,10 +61,9 @@ class _AzaanSettingsState extends State<AzaanSettings> {
   void initialize(AzaanBloc azaanBloc) {
     if (count == 0) {
       count++;
-
-      type = azaanBloc.selectedAdhan['type'];
-      if (type == 0) {
-        defaultAdhan = azaanBloc.selectedAdhan['name'];
+      type = azaanBloc.selectedAdhan.type;
+      if (type == 1) {
+        defaultAdhan = azaanBloc.selectedAdhan;
       } else {
         defaultAdhan = azaanBloc.adhanList[0];
       }
@@ -102,17 +104,14 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                   inactiveBgColor: bgColor,
                   initialLabelIndex: type,
                   totalSwitches: 2,
-                  labels: const ['Library', 'Custom'],
+                  labels: const ['Custom', 'Library'],
                   onToggle: (index) {
                     setState(() {
                       type = index!;
-                      if (type == 0) {
-                        if (azaanBloc.selectedAdhan['type'] == 0) {
-                          defaultAdhan = azaanBloc.selectedAdhan['name'] ??
-                              azaanBloc.adhanList[0];
-                        } else {
-                          defaultAdhan = azaanBloc.adhanList[0];
-                        }
+                      if (type == 1) {
+                        defaultAdhan = azaanBloc.adhanList[0];
+                        azaanBloc.selectedAdhan = defaultAdhan;
+                        print(azaanBloc.adhanList[0]);
                       }
                     });
                   },
@@ -121,11 +120,11 @@ class _AzaanSettingsState extends State<AzaanSettings> {
               const SizedBox(
                 height: 10,
               ),
-              type == 0
+              type == 1
                   ? Flexible(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 20.0),
-                        child: DropdownButton<String>(
+                        child: DropdownButton<AdhanItem>(
                           style: const TextStyle(
                               color: textColor, fontSize: textSize),
                           dropdownColor: Colors.black,
@@ -135,25 +134,25 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                           onChanged: (newValue) async {
                             setState(() {
                               defaultAdhan = newValue!;
-                              azaanBloc.selectedAdhan['name'] = newValue!;
-                              azaanBloc.selectedAdhan['path'] =
-                                  "assets/audio/$newValue";
-                              azaanBloc.selectedAdhan['type'] = 0;
+                              azaanBloc.selectedAdhan = defaultAdhan;
                             });
 
                             final LocalStorage storage =
                                 LocalStorage('surah_schedular.json');
-                            await storage.setItem(
-                                'selectedAdhan', azaanBloc.selectedAdhan);
+                            await storage.setItem('selectedAdhan',
+                                azaanBloc.selectedAdhan.toJson());
                           },
                           items: azaanBloc.adhanList
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
+                              .map<DropdownMenuItem<AdhanItem>>(
+                                  (AdhanItem value) {
+                            return DropdownMenuItem<AdhanItem>(
                               value: value,
                               child: Text(
-                                value,
+                                value.name.toString(),
                                 style: const TextStyle(
-                                    color: textColor, fontSize: textSize),
+                                  color: textColor,
+                                  fontSize: textSize,
+                                ),
                               ),
                             );
                           }).toList(),
@@ -194,10 +193,10 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                             const SizedBox(
                               width: 10,
                             ),
-                            azaanBloc.selectedAdhan['type'] == 1
+                            azaanBloc.selectedAdhan.type == 0
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 10),
-                                    child: Text(azaanBloc.selectedAdhan['name'],
+                                    child: Text(azaanBloc.selectedAdhan.name,
                                         style: const TextStyle(
                                             color: textColor,
                                             fontSize: textSize - 4)),
@@ -219,10 +218,15 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                         size: textSize + 10,
                       ),
                       onPressed: () async {
+                        print(azaanBloc.selectedAdhan);
                         await FlutterVolumeController.setVolume(maxValue / 100);
                         player.setVolume(maxValue / 100);
-                        player.play(
-                            DeviceFileSource(azaanBloc.selectedAdhan['path']));
+                        if (azaanBloc.selectedAdhan.type == 1) {
+                          player.play(UrlSource(azaanBloc.selectedAdhan.path));
+                        } else {
+                          player.play(
+                              DeviceFileSource(azaanBloc.selectedAdhan.path));
+                        }
                       },
                     ),
                     IconButton(

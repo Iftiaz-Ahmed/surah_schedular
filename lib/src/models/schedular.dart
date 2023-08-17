@@ -30,20 +30,22 @@ class Schedular {
   // }
 
   void startTimer(Duration duration, Task task, double volume) {
-    Timer newTimer = Timer(duration, () async {
-      print('Task scheduled at ${task.time} on ${task.date}');
-      print("Executed at ${DateTime.now()}");
-      // await textToSpeech(task.name).then((value) {
-      //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
-      // });
-      await FlutterVolumeController.setVolume(volume / 100);
-      player.setVolume(volume / 100);
-      if (task.sourceType == 0) {
-        player.play(DeviceFileSource(task.source));
-      } else {
-        player.play(UrlSource(task.source));
-      }
-    });
+    Timer? newTimer = duration.isNegative
+        ? null
+        : Timer(duration, () async {
+            print('Task scheduled at ${task.time} on ${task.date}');
+            print("Executed at ${DateTime.now()}");
+            // await textToSpeech(task.name).then((value) {
+            //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
+            // });
+            await FlutterVolumeController.setVolume(volume / 100);
+            player.setVolume(volume / 100);
+            if (task.sourceType == 0) {
+              player.play(DeviceFileSource(task.source));
+            } else {
+              player.play(UrlSource(task.source));
+            }
+          });
 
     task.taskTimer = newTimer;
     tasks.add(task);
@@ -63,9 +65,7 @@ class Schedular {
         convertedDate[0], convertedTime[0], convertedTime[1], 0);
 
     if (frequency == 0) {
-      if (currentTime.isAfter(desiredTime)) {
-        return;
-      }
+      // functions for once freq.
     } else if (frequency == 1) {
       desiredTime = DateTime(currentTime.year, currentTime.month,
           currentTime.day, convertedTime[0], convertedTime[1], 0);

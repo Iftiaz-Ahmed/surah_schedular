@@ -11,6 +11,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../Components/input_field.dart';
+import '../models/adhan.dart';
 import '../models/formInputs.dart';
 import '../provider/azaan_bloc.dart';
 import '../screens/schedule_surah.dart';
@@ -129,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage>
       });
       await getSavedAdhanName().then((value) {
         if (value.isNotEmpty) {
-          azaanBloc.selectedAdhan = value;
+          azaanBloc.selectedAdhan = AdhanItem.fromJson(value);
         }
       });
       await azaanBloc.getAdhanFileNames();
@@ -219,23 +220,6 @@ class _MyHomePageState extends State<MyHomePage>
                               margin: const EdgeInsets.only(top: 10),
                               width: 300,
                               child: InputField(
-                                hintText: 'Enter zip code',
-                                keyboardType: TextInputType.number,
-                                onChanged: (value) {
-                                  setState(() {
-                                    azaanBloc.formInputs.zipcode = value;
-                                  });
-                                },
-                                controller: _zipController,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              width: 300,
-                              child: InputField(
                                 hintText: 'Enter City',
                                 keyboardType: TextInputType.text,
                                 onChanged: (value) {
@@ -261,6 +245,23 @@ class _MyHomePageState extends State<MyHomePage>
                                   });
                                 },
                                 controller: _countryController,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              width: 300,
+                              child: InputField(
+                                hintText: 'Enter zip code',
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    azaanBloc.formInputs.zipcode = value;
+                                  });
+                                },
+                                controller: _zipController,
                               ),
                             ),
                           ),
@@ -341,12 +342,11 @@ class _MyHomePageState extends State<MyHomePage>
             //
             //               // try {
             //               List<find_chromecast.CastDevice> devices =
-            //               await find_chromecast.find_chromecasts();
+            //                   await find_chromecast.find_chromecasts();
             //               if (devices.isNotEmpty) {
             //                 find_chromecast.CastDevice device = devices.first;
             //                 print(device.name);
             //                 final CastDevice castDevice = CastDevice(
-            //                   host: device.ip,
             //                   port: device.port,
             //                   type: '_googlecast._tcp',
             //                 );
@@ -356,15 +356,15 @@ class _MyHomePageState extends State<MyHomePage>
             //                 print("Connection Successfull!");
             //
             //                 castSender.launch();
-            //                 List<CastMedia> mediaList = [
-            //                   CastMedia(
-            //                     contentId:
-            //                     "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
-            //                     contentType: 'audio/mp3',
-            //                   ),
-            //                 ];
-            //
-            //                 castSender.loadPlaylist(mediaList);
+            //                 // List<CastMedia> mediaList = [
+            //                 //   CastMedia(
+            //                 //     contentId:
+            //                 //         "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
+            //                 //     contentType: 'audio/mp3',
+            //                 //   ),
+            //                 // ];
+            //                 //
+            //                 // castSender.loadPlaylist(mediaList);
             //               } else {
             //                 // No devices found
             //                 print("Connection Unsuccessfull!");

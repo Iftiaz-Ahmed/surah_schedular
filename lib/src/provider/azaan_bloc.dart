@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:surah_schedular/src/models/formInputs.dart';
 import 'package:surah_schedular/src/models/prayerMethod.dart';
@@ -9,6 +6,7 @@ import 'package:surah_schedular/src/models/schedular.dart';
 import 'package:surah_schedular/src/models/todaysAzaan.dart';
 import 'package:surah_schedular/src/services/api_services.dart';
 
+import '../models/adhan.dart';
 import '../models/surah.dart';
 
 class AzaanBloc extends ChangeNotifier {
@@ -147,18 +145,17 @@ class AzaanBloc extends ChangeNotifier {
     return format.format(calculatedTime);
   }
 
-  List _adhanList = [];
+  List<AdhanItem> _adhanList = [];
   get adhanList => _adhanList;
   set adhanList(var value) {
     _adhanList = value;
     notifyListeners();
   }
 
-  Map _selectedAdhan = {
-    "name": "Masjid Al-Haram in Mecca.mp3",
-    "path": "assets/audio/Masjid Al-Haram in Mecca.mp3",
-    "type": 0
-  };
+  AdhanItem _selectedAdhan = AdhanItem(
+      name: "Azaan 1",
+      path: "https://www.islamcan.com/audio/adhan/azan1.mp3",
+      type: 1);
   get selectedAdhan => _selectedAdhan;
   set selectedAdhan(var value) {
     _selectedAdhan = value;
@@ -166,18 +163,13 @@ class AzaanBloc extends ChangeNotifier {
   }
 
   Future<void> getAdhanFileNames() async {
-    List<String> audioFileNames = [];
-    try {
-      final manifestContent = await rootBundle.loadString('AssetManifest.json');
-      final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-      for (String key in manifestMap.keys) {
-        if (key.contains('assets/audio') && key.endsWith('.mp3')) {
-          audioFileNames.add(key.split('/').last);
-        }
-      }
-    } catch (e) {
-      print("Error reading audio files: $e");
+    List<AdhanItem> audioFileNames = [];
+    for (int i = 1; i <= 21; i++) {
+      AdhanItem item = AdhanItem(
+          name: "Azaan $i",
+          path: "https://www.islamcan.com/audio/adhan/azan$i.mp3",
+          type: 1);
+      audioFileNames.add(item);
     }
     adhanList = audioFileNames;
   }

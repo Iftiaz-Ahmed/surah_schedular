@@ -1,5 +1,5 @@
-import 'package:args/args.dart';
-import 'package:dart_chromecast/casting/cast_media.dart';
+// import 'package:args/args.dart';
+// import 'package:dart_chromecast/casting/cast_media.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
@@ -33,41 +33,39 @@ void main(List<String> arguments) async {
   ], child: const MyApp()));
 
   // chromecast code
-  print("Arguments: $arguments");
-  final parser = new ArgParser()
-    ..addOption('host', abbr: 'h', defaultsTo: '')
-    ..addOption('port', abbr: 'p', defaultsTo: '8009')
-    ..addOption('title', abbr: 't', defaultsTo: null)
-    ..addOption('subtitle', abbr: 's', defaultsTo: null)
-    ..addOption('image', abbr: 'i', defaultsTo: '')
-    ..addFlag('append', abbr: 'a', defaultsTo: false)
-    ..addFlag('debug', abbr: 'd', defaultsTo: false);
-
-  final ArgResults argResults = parser.parse(arguments);
-
-  if (true == argResults['debug']) {
-    Logger.root.level = Level.ALL;
-    Logger.root.onRecord.listen((LogRecord rec) {
-      print('${rec.level.name}: ${rec.message}');
-    });
-  } else {
-    Logger.root.level = Level.OFF;
-  }
-
-  String imageUrl = argResults['image'];
-  final List<String> images = imageUrl != '' ? [imageUrl] : [];
-
-  // turn each rest argument string into a CastMedia instance
-  final List<CastMedia> media = argResults.rest
-      .map((String i) => CastMedia(
-          contentId: i,
-          images: images,
-          title: argResults['title'],
-          subtitle: argResults['subtitle']))
-      .toList();
-
-  String host = argResults['host'];
-  int? port = int.parse(argResults['port']);
+  // print("Arguments: $arguments");
+  // final parser = new ArgParser()
+  //   ..addOption('port', abbr: 'p', defaultsTo: '8009')
+  //   ..addOption('title', abbr: 't', defaultsTo: null)
+  //   ..addOption('subtitle', abbr: 's', defaultsTo: null)
+  //   ..addOption('image', abbr: 'i', defaultsTo: '')
+  //   ..addFlag('append', abbr: 'a', defaultsTo: false)
+  //   ..addFlag('debug', abbr: 'd', defaultsTo: false);
+  //
+  // final ArgResults argResults = parser.parse(arguments);
+  //
+  // if (true == argResults['debug']) {
+  //   Logger.root.level = Level.ALL;
+  //   Logger.root.onRecord.listen((LogRecord rec) {
+  //     print('${rec.level.name}: ${rec.message}');
+  //   });
+  // } else {
+  //   Logger.root.level = Level.OFF;
+  // }
+  //
+  // String imageUrl = argResults['image'];
+  // final List<String> images = imageUrl != '' ? [imageUrl] : [];
+  //
+  // // turn each rest argument string into a CastMedia instance
+  // final List<CastMedia> media = argResults.rest
+  //     .map((String i) => CastMedia(
+  //           contentId: i,
+  //           images: images,
+  //           title: argResults['title'],
+  //         ))
+  //     .toList();
+  //
+  // int? port = int.parse(argResults['port']);
   // if ('' == host.trim()) {
   // search!
   //   print('Looking for ChromeCast devices...');
@@ -235,7 +233,7 @@ class MyApp extends StatelessWidget {
                   primarySwatch:
                       ThemeHelpers().createMaterialColor(primarySwatch))
               .copyWith(background: bgColor)),
-      home: const MyHomePage(title: 'Surah Schedular'),
+      home: const MyHomePage(title: 'Digital Azaan'),
     );
   }
 }

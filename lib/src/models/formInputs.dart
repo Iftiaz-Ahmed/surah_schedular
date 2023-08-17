@@ -40,8 +40,10 @@ class FormInputs {
 
   Future<void> saveInfo(String data) async {
     try {
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.setItem('formInputs', data);
+      if (data.isNotEmpty) {
+        final LocalStorage storage = LocalStorage('surah_schedular.json');
+        await storage.setItem('formInputs', data);
+      }
     } catch (e) {}
   }
 
