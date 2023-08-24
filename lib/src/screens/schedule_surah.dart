@@ -27,6 +27,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
   int unitIndex = 1;
   int frequencyIndex = 0;
   double volume = 80.0;
+  List surahList = [];
+  int count = 0;
   TextEditingController _timeTextController = TextEditingController();
   TextEditingController _scheduledDate = TextEditingController();
   TextEditingController _scheduledTime = TextEditingController();
@@ -45,9 +47,23 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
     _scheduledTime.text = DateFormat('HH:mm').format(DateTime.now());
   }
 
+  void initialize(AzaanBloc azaanBloc) {
+    if (count == 0) {
+      count++;
+      surahList.clear();
+      for (int i = 0; i < azaanBloc.schedular.tasks.length; i++) {
+        if (azaanBloc.schedular.tasks[i].isSurah) {
+          Map data = {"task": azaanBloc.schedular.tasks[i], "index": i};
+          surahList.add(data);
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    initialize(azaanBloc);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -63,121 +79,120 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
         child: Row(
           children: [
             Expanded(
-              flex: 2,
-              child: azaanBloc.surahSchedular.tasks.length > 0
-                  ? Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView.builder(
-                          itemCount: azaanBloc.surahSchedular.tasks.length ?? 0,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              dense: true,
-                              leading: Text(
-                                "${index + 1}",
-                                style: const TextStyle(color: textColor),
-                              ),
-                              title: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    flex: 2,
-                                    child: Text(
-                                      azaanBloc
-                                          .surahSchedular.tasks[index].name,
-                                      style: const TextStyle(
-                                          color: textColor,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 2,
-                                    child: Text(
-                                      azaanBloc
-                                          .surahSchedular.tasks[index].date,
-                                      style: const TextStyle(
-                                          color: textColor,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      azaanBloc
-                                          .surahSchedular.tasks[index].time,
-                                      style: const TextStyle(
-                                          color: textColor,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      frequency[azaanBloc.surahSchedular
-                                          .tasks[index].frequency],
-                                      style: const TextStyle(
-                                          color: textColor,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      "${azaanBloc.surahSchedular.tasks[index].volume.toInt()}%",
-                                      style: const TextStyle(
-                                          color: textColor,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    azaanBloc.surahSchedular.deleteTask(index);
-                                  });
-                                },
-                                icon: const Icon(
-                                  Icons.clear,
-                                  color: Colors.red,
+                flex: 2,
+                child: surahList.length > 0
+                    ? Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: ListView.builder(
+                            itemCount: surahList.length ?? 0,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                dense: true,
+                                leading: Text(
+                                  "${index + 1}",
+                                  style: const TextStyle(color: textColor),
                                 ),
-                              ),
-                            );
-                          }),
-                    )
-                  : Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[
-                            800], // Set your desired background color here
-                        border: Border.all(
-                          color: Colors.black, // Set the border color
-                          width: 1.0, // Set the border width
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey
-                                .withOpacity(0.5), // Set the shadow color
-                            spreadRadius: 2, // Set the spread radius
-                            blurRadius: 4, // Set the blur radius
-                            offset: const Offset(0, 2), // Set the shadow offset
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        surahList[index]['task'].name,
+                                        style: const TextStyle(
+                                            color: textColor,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 2,
+                                      child: Text(
+                                        surahList[index]['task'].date,
+                                        style: const TextStyle(
+                                            color: textColor,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        surahList[index]['task'].time,
+                                        style: const TextStyle(
+                                            color: textColor,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        frequency[
+                                            surahList[index]['task'].frequency],
+                                        style: const TextStyle(
+                                            color: textColor,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        "${surahList[index]['task'].volume.toInt()}%",
+                                        style: const TextStyle(
+                                            color: textColor,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      azaanBloc.schedular.deleteTask(
+                                          surahList[index]['index']);
+                                      count = 0; // required to update data
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              );
+                            }),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[
+                              800], // Set your desired background color here
+                          border: Border.all(
+                            color: Colors.black, // Set the border color
+                            width: 1.0, // Set the border width
                           ),
-                        ],
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 15),
-                      padding: const EdgeInsets.all(15.0),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width / 5,
-                      child: const Center(
-                        child: Text(
-                          "No Surah Scheduled!",
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontSize: textSize + 4,
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w500),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.5), // Set the shadow color
+                              spreadRadius: 2, // Set the spread radius
+                              blurRadius: 4, // Set the blur radius
+                              offset:
+                                  const Offset(0, 2), // Set the shadow offset
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-            ),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 15),
+                        padding: const EdgeInsets.all(15.0),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.width / 5,
+                        child: const Center(
+                          child: Text(
+                            "No Surah Scheduled!",
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontSize: textSize + 4,
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      )),
             Expanded(
               flex: 3,
               child: Column(
@@ -567,6 +582,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
         ),
         onPressed: () {
           setState(() {
+            count = 0; // required to update data
             if (toggleIndex == 1) {
               _scheduledTime.text = azaanBloc.calculateScheduleTime(
                   prayers[prayerIndex],
@@ -576,7 +592,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
             }
           });
           print("${selectedSurah.name} - ${selectedSurah.source}");
-          azaanBloc.surahSchedular.addNewSchedule(
+          azaanBloc.schedular.addNewSchedule(
               selectedSurah.name,
               _scheduledDate.text,
               _scheduledTime.text,

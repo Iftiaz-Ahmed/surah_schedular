@@ -85,28 +85,28 @@ class AzaanBloc extends ChangeNotifier {
     return _prayerMethodList;
   }
 
-  Schedular _prayerSchedular = Schedular();
-  get prayerSchedular => _prayerSchedular;
-  set prayerSchedular(var value) {
-    _prayerSchedular = value;
+  Schedular _schedular = Schedular();
+  get schedular => _schedular;
+  set schedular(var value) {
+    _schedular = value;
     notifyListeners();
   }
 
-  Schedular _surahSchedular = Schedular();
-  get surahSchedular => _surahSchedular;
-  set surahSchedular(var value) {
-    _surahSchedular = value;
-    notifyListeners();
-  }
+  // Schedular _surahSchedular = Schedular();
+  // get surahSchedular => _surahSchedular;
+  // set surahSchedular(var value) {
+  //   _surahSchedular = value;
+  //   notifyListeners();
+  // }
 
   Future<void> setAzaanTimes(source) async {
     Map azaan = {"Fajr": 0, "Dhuhr": 1, "Asr": 2, "Maghrib": 3, "Isha": 4};
-    prayerSchedular.cancelAllTimers();
+    schedular.cancelAllTimers();
     TodayAzaan todayAzaan = _todayAzaan;
 
     todayAzaan.prayerTimes?.forEach((key, value) {
-      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value,
-          selectedAdhan.type, source, 0, azaanVolumes[azaan[key]], false);
+      schedular.addNewSchedule(key, todayAzaan.gregorianDate, value,
+          _selectedAdhan.type, source, 0, azaanVolumes[azaan[key]], false);
     });
   }
 

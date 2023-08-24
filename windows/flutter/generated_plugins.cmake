@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
+  flutter_tts
   flutter_volume_controller
   screen_retriever
   tray_manager

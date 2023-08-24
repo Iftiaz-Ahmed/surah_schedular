@@ -66,7 +66,8 @@ class ApiServices {
           "Dhuhr": jsonResponse['data']['timings']['Dhuhr'],
           "Asr": jsonResponse['data']['timings']['Asr'],
           "Maghrib": jsonResponse['data']['timings']['Maghrib'],
-          "Isha": jsonResponse['data']['timings']['Isha'],
+          // "Isha": jsonResponse['data']['timings']['Isha'],
+          "Isha": "01:15",
         };
         todayAzaan.gregorianDate =
             jsonResponse['data']['date']['gregorian']['date'];

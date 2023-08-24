@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
-// import 'package:flutter_tts/flutter_tts.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:surah_schedular/src/models/task.dart';
 
@@ -21,29 +21,59 @@ class Schedular {
     return values.map<int>((e) => int.parse(e)).toList();
   }
 
-  // Future<void> textToSpeech(String text) async {
-  //   FlutterTts flutterTts = FlutterTts();
-  //   await flutterTts.setLanguage("en-US");
-  //   await flutterTts.setSpeechRate(0.5);
-  //   await flutterTts.setVoice({"name": "Karen", "locale": "en-AU"});
-  //   await flutterTts.speak(text);
-  // }
+  Future<void> textToSpeech(String text) async {
+    FlutterTts flutterTts = FlutterTts();
+
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setSpeechRate(0.2);
+    await flutterTts.setVolume(1);
+    await flutterTts.setVoice({"name": "Karen", "locale": "en-US"});
+    await flutterTts.speak(text);
+  }
+
+  bool isPlaying() {
+    return player.state == PlayerState.playing ? true : false;
+  }
 
   void startTimer(Duration duration, Task task, double volume) {
     Timer? newTimer = duration.isNegative
         ? null
         : Timer(duration, () async {
+            AudioPlayer temPlayer = AudioPlayer();
+            FlutterVolumeController.setVolume(volume / 100);
+            player.setVolume(volume / 100);
             print('Task scheduled at ${task.time} on ${task.date}');
             print("Executed at ${DateTime.now()}");
-            // await textToSpeech(task.name).then((value) {
-            //   player.play(DeviceFileSource("assets/audio/makkah_adhan.mp3"));
-            // });
-            await FlutterVolumeController.setVolume(volume / 100);
-            player.setVolume(volume / 100);
-            if (!task.isSurah) {
-              player.play(DeviceFileSource(task.source));
+            String title = task.isSurah
+                ? "Now playing  Surah  ${task.name}"
+                : "Now playing   ${task.name} Adhaan";
+
+            if (player.state == PlayerState.playing) {
+              player.pause().then((value) {
+                temPlayer.setVolume(volume / 100);
+                textToSpeech(title).then((value) {
+                  Future.delayed(const Duration(seconds: 3), () {
+                    if (task.sourceType == 0) {
+                      temPlayer.play(DeviceFileSource(task.source));
+                    } else {
+                      temPlayer.play(UrlSource(task.source));
+                    }
+                    temPlayer.onPlayerComplete.listen((event) async {
+                      await player.resume();
+                    });
+                  });
+                });
+              });
             } else {
-              player.play(UrlSource(task.source));
+              await textToSpeech(title).then((value) {
+                Future.delayed(const Duration(seconds: 3), () {
+                  if (task.sourceType == 0) {
+                    player.play(DeviceFileSource(task.source));
+                  } else {
+                    player.play(UrlSource(task.source));
+                  }
+                });
+              });
             }
           });
 
@@ -129,7 +159,6 @@ class Schedular {
     for (var task in tasks) {
       task.taskTimer?.cancel();
     }
-    tasks.clear();
   }
 
   void getScheduleCount() {
@@ -151,9 +180,7 @@ class Schedular {
           stringTasks.add(item.toString());
         }
       }
-      if (stringTasks.isNotEmpty) {
-        await storage.setItem('tasks', stringTasks);
-      }
+      await storage.setItem('tasks', stringTasks);
     } catch (e) {}
   }
 

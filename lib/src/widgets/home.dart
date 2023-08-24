@@ -150,254 +150,256 @@ class _MyHomePageState extends State<MyHomePage>
     initializeData(azaanBloc);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          widget.title,
-          style: const TextStyle(color: textColor),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.all(10.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: bgColor, // Set the background color
-                textStyle:
-                    const TextStyle(color: textColor), // Set the text color
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 24.0), // Set the padding
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Set the border radius
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ScheduleSurah()),
-                );
-              },
-              child: const Text('Schedule Surah'),
-            ),
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            widget.title,
+            style: const TextStyle(color: textColor),
           ),
-        ],
-      ),
-      floatingActionButton: IconButton(
-        icon: const Icon(
-          Icons.settings,
-          color: textColor,
-          size: textSize + 10,
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AzaanSettings()),
-          );
-        },
-      ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Expanded(flex: 7, child: AzaanView()),
-                  Expanded(
-                    flex: 6,
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              width: 300,
-                              child: InputField(
-                                hintText: 'Enter City',
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  setState(() {
-                                    azaanBloc.formInputs.city = value;
-                                  });
-                                },
-                                controller: _cityController,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              width: 300,
-                              child: InputField(
-                                hintText: 'Enter Country',
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  setState(() {
-                                    azaanBloc.formInputs.country = value;
-                                  });
-                                },
-                                controller: _countryController,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              width: 300,
-                              child: InputField(
-                                hintText: 'Enter zip code',
-                                keyboardType: TextInputType.number,
-                                onChanged: (value) {
-                                  setState(() {
-                                    azaanBloc.formInputs.zipcode = value;
-                                  });
-                                },
-                                controller: _zipController,
-                              ),
-                            ),
-                          ),
-                          const Expanded(flex: 2, child: MethodDropdown()),
-                          const Expanded(flex: 2, child: SchoolDropdown()),
-                          const Expanded(
-                            flex: 1,
-                            child: SizedBox(
-                              height: 10,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Colors.green, // Set the background color
-                                textStyle: const TextStyle(
-                                    color: textColor,
-                                    fontSize: 18), // Set the text color
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0.0,
-                                    horizontal: 20.0), // Set the padding
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Set the border radius
-                                ),
-                              ),
-                              onPressed: () {
-                                azaanBloc
-                                    .getLatLng(azaanBloc.formInputs)
-                                    .then((value) {
-                                  if (value.isNotEmpty) {
-                                    setState(() {
-                                      azaanBloc.formInputs.latitude = value[0];
-                                      azaanBloc.formInputs.longitude = value[1];
-                                      azaanBloc.formInputs.city = value[2];
-                                      azaanBloc.formInputs.country = value[3];
-                                      _cityController.text = value[2];
-                                      _countryController.text = value[3];
-                                    });
-                                  }
-                                  azaanBloc.formInputs.method =
-                                      azaanBloc.formInputs.method ?? 2;
-                                  azaanBloc.formInputs.school =
-                                      azaanBloc.formInputs.school ?? 1;
-                                  azaanBloc
-                                      .getTodayAzaan(azaanBloc.formInputs)
-                                      .then((value) {
-                                    azaanBloc.setAzaanTimes(
-                                        azaanBloc.selectedAdhan.path);
-                                    azaanBloc.formInputs.saveInfo(
-                                        azaanBloc.formInputs.toString());
-                                  });
-                                });
-                              },
-                              child: const Text('Save Settings'),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 8,
-                            child: Container(),
-                          )
-                        ],
-                      ),
-                    ),
+          actions: [
+            Container(
+              margin: const EdgeInsets.all(10.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: bgColor, // Set the background color
+                  textStyle:
+                      const TextStyle(color: textColor), // Set the text color
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 24.0), // Set the padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(8.0), // Set the border radius
                   ),
-                ],
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScheduleSurah()),
+                  );
+                },
+                child: const Text('Schedule Surah'),
               ),
             ),
-            // Expanded(
-            //     flex: 1,
-            //     child: Row(
-            //       children: [
-            //         ElevatedButton(
-            //             onPressed: () async {
-            //               print('Looking for ChromeCast devices...');
-            //
-            //               // try {
-            //               List<find_chromecast.CastDevice> devices =
-            //                   await find_chromecast.find_chromecasts();
-            //               if (devices.isNotEmpty) {
-            //                 find_chromecast.CastDevice device = devices.first;
-            //                 print(device.name);
-            //                 final CastDevice castDevice = CastDevice(
-            //                   port: device.port,
-            //                   type: '_googlecast._tcp',
-            //                 );
-            //                 CastSender castSender = CastSender(castDevice);
-            //                 await castSender.connect();
-            //                 // Connection successful
-            //                 print("Connection Successfull!");
-            //
-            //                 castSender.launch();
-            //                 // List<CastMedia> mediaList = [
-            //                 //   CastMedia(
-            //                 //     contentId:
-            //                 //         "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
-            //                 //     contentType: 'audio/mp3',
-            //                 //   ),
-            //                 // ];
-            //                 //
-            //                 // castSender.loadPlaylist(mediaList);
-            //               } else {
-            //                 // No devices found
-            //                 print("Connection Unsuccessfull!");
-            //               }
-            //               // } catch (e) {
-            //               //   print(e);
-            //               //   setState(() {
-            //               //     deviceName = e.toString();
-            //               //   });
-            //               // }
-            //             },
-            //             child: Text('Click')),
-            //         ElevatedButton(
-            //             onPressed: () {
-            //               player.play(UrlSource(
-            //                   "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3"));
-            //             },
-            //             child: Text('Play')),
-            //         ElevatedButton(
-            //             onPressed: () {
-            //               player.pause();
-            //             },
-            //             child: Text('Pause')),
-            //       ],
-            //     )),
-            // Text(
-            //   deviceName,
-            //   style: TextStyle(color: textColor),
-            // )
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        floatingActionButton: IconButton(
+          icon: const Icon(
+            Icons.settings,
+            color: textColor,
+            size: textSize + 10,
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AzaanSettings()),
+            );
+          },
+        ),
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Expanded(flex: 7, child: AzaanView()),
+                    Expanded(
+                      flex: 6,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                width: 300,
+                                child: InputField(
+                                  hintText: 'Enter City',
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      azaanBloc.formInputs.city = value;
+                                    });
+                                  },
+                                  controller: _cityController,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                width: 300,
+                                child: InputField(
+                                  hintText: 'Enter Country',
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      azaanBloc.formInputs.country = value;
+                                    });
+                                  },
+                                  controller: _countryController,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                width: 300,
+                                child: InputField(
+                                  hintText: 'Enter zip code',
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      azaanBloc.formInputs.zipcode = value;
+                                    });
+                                  },
+                                  controller: _zipController,
+                                ),
+                              ),
+                            ),
+                            const Expanded(flex: 2, child: MethodDropdown()),
+                            const Expanded(flex: 2, child: SchoolDropdown()),
+                            const Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                height: 10,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.green, // Set the background color
+                                  textStyle: const TextStyle(
+                                      color: textColor,
+                                      fontSize: 18), // Set the text color
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 0.0,
+                                      horizontal: 20.0), // Set the padding
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        8.0), // Set the border radius
+                                  ),
+                                ),
+                                onPressed: () {
+                                  azaanBloc
+                                      .getLatLng(azaanBloc.formInputs)
+                                      .then((value) {
+                                    if (value.isNotEmpty) {
+                                      setState(() {
+                                        azaanBloc.formInputs.latitude =
+                                            value[0];
+                                        azaanBloc.formInputs.longitude =
+                                            value[1];
+                                        azaanBloc.formInputs.city = value[2];
+                                        azaanBloc.formInputs.country = value[3];
+                                        _cityController.text = value[2];
+                                        _countryController.text = value[3];
+                                      });
+                                    }
+                                    azaanBloc.formInputs.method =
+                                        azaanBloc.formInputs.method ?? 2;
+                                    azaanBloc.formInputs.school =
+                                        azaanBloc.formInputs.school ?? 1;
+                                    azaanBloc
+                                        .getTodayAzaan(azaanBloc.formInputs)
+                                        .then((value) {
+                                      azaanBloc.setAzaanTimes(
+                                          azaanBloc.selectedAdhan.path);
+                                      azaanBloc.formInputs.saveInfo(
+                                          azaanBloc.formInputs.toString());
+                                    });
+                                  });
+                                },
+                                child: const Text('Save Settings'),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 8,
+                              child: Container(),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Expanded(
+              //     flex: 1,
+              //     child: Row(
+              //       children: [
+              //         ElevatedButton(
+              //             onPressed: () async {
+              //               print('Looking for ChromeCast devices...');
+              //
+              //               // try {
+              //               List<find_chromecast.CastDevice> devices =
+              //                   await find_chromecast.find_chromecasts();
+              //               if (devices.isNotEmpty) {
+              //                 find_chromecast.CastDevice device = devices.first;
+              //                 print(device.name);
+              //                 final CastDevice castDevice = CastDevice(
+              //                   port: device.port,
+              //                   type: '_googlecast._tcp',
+              //                 );
+              //                 CastSender castSender = CastSender(castDevice);
+              //                 await castSender.connect();
+              //                 // Connection successful
+              //                 print("Connection Successfull!");
+              //
+              //                 castSender.launch();
+              //                 // List<CastMedia> mediaList = [
+              //                 //   CastMedia(
+              //                 //     contentId:
+              //                 //         "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
+              //                 //     contentType: 'audio/mp3',
+              //                 //   ),
+              //                 // ];
+              //                 //
+              //                 // castSender.loadPlaylist(mediaList);
+              //               } else {
+              //                 // No devices found
+              //                 print("Connection Unsuccessfull!");
+              //               }
+              //               // } catch (e) {
+              //               //   print(e);
+              //               //   setState(() {
+              //               //     deviceName = e.toString();
+              //               //   });
+              //               // }
+              //             },
+              //             child: Text('Click')),
+              //         ElevatedButton(
+              //             onPressed: () {
+              //               player.play(UrlSource(
+              //                   "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3"));
+              //             },
+              //             child: Text('Play')),
+              //         ElevatedButton(
+              //             onPressed: () {
+              //               player.pause();
+              //             },
+              //             child: Text('Pause')),
+              //       ],
+              //     )),
+              // Text(
+              //   deviceName,
+              //   style: TextStyle(color: textColor),
+              // )
+            ],
+          ),
+        ) // This trailing comma makes auto-formatting nicer for build methods.
+        );
   }
 
   @override
