@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage>
           _cityController.text = formInput.city ?? '';
           _countryController.text = formInput.country ?? '';
           azaanBloc.getTodayAzaan(formInput).then((value) {
-            azaanBloc.setAzaanTimes(azaanBloc.selectedAdhan['path']);
+            azaanBloc.setAzaanTimes(azaanBloc.selectedAdhan.path);
           });
         }
       });
@@ -312,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage>
                                       .getTodayAzaan(azaanBloc.formInputs)
                                       .then((value) {
                                     azaanBloc.setAzaanTimes(
-                                        azaanBloc.selectedAdhan['path']);
+                                        azaanBloc.selectedAdhan.path);
                                     azaanBloc.formInputs.saveInfo(
                                         azaanBloc.formInputs.toString());
                                   });

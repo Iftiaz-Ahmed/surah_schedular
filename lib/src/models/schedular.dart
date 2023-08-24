@@ -40,7 +40,7 @@ class Schedular {
             // });
             await FlutterVolumeController.setVolume(volume / 100);
             player.setVolume(volume / 100);
-            if (task.sourceType == 0) {
+            if (!task.isSurah) {
               player.play(DeviceFileSource(task.source));
             } else {
               player.play(UrlSource(task.source));
@@ -55,8 +55,15 @@ class Schedular {
     return player.state;
   }
 
-  Future<void> addNewSchedule(String name, String date, String time,
-      int scheduleType, String source, int frequency, double volume) async {
+  Future<void> addNewSchedule(
+      String name,
+      String date,
+      String time,
+      int scheduleType,
+      String source,
+      int frequency,
+      double volume,
+      bool isSurah) async {
     List convertedDate = convertDateTime(date, "-");
     List convertedTime = convertDateTime(time, ":");
 
@@ -77,7 +84,6 @@ class Schedular {
             currentTime.day, convertedTime[0], convertedTime[1], 0);
         if (currentTime.isAfter(desiredTime)) {
           desiredTime = desiredTime.add(Duration(days: 7));
-          print(desiredTime);
         }
       } else {
         return;
@@ -86,29 +92,18 @@ class Schedular {
 
     var duration = desiredTime.difference(currentTime);
 
-    if (scheduleType == 0) {
-      Task task = Task(
-          name: name,
-          date: date,
-          time: time,
-          taskTimer: null,
-          frequency: frequency,
-          sourceType: scheduleType,
-          source: source,
-          volume: volume);
-      startTimer(duration, task, volume);
-    } else {
-      Task task = Task(
-          name: name,
-          date: date,
-          time: time,
-          taskTimer: null,
-          frequency: frequency,
-          sourceType: scheduleType,
-          source: source,
-          volume: volume);
-      startTimer(duration, task, volume);
-    }
+    Task task = Task(
+        name: name,
+        date: date,
+        time: time,
+        taskTimer: null,
+        frequency: frequency,
+        sourceType: scheduleType,
+        isSurah: isSurah,
+        source: source,
+        volume: volume);
+    startTimer(duration, task, volume);
+
     scheduleCount++;
     saveTasks();
   }
@@ -149,16 +144,14 @@ class Schedular {
 
   Future<void> saveTasks() async {
     try {
-      bool isSurah = false;
       final LocalStorage storage = LocalStorage('surah_schedular.json');
       List<String> stringTasks = [];
       for (var item in tasks) {
-        if (item.sourceType == 1) {
+        if (item.isSurah) {
           stringTasks.add(item.toString());
-          isSurah = true;
         }
       }
-      if (isSurah) {
+      if (stringTasks.isNotEmpty) {
         await storage.setItem('tasks', stringTasks);
       }
     } catch (e) {}
@@ -176,7 +169,7 @@ class Schedular {
 
       for (var item in items) {
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;
-        if (jsonMap['sourceType'] == 1) {
+        if (jsonMap['isSurah']) {
           addNewSchedule(
               jsonMap['name'],
               jsonMap['date'],
@@ -184,7 +177,8 @@ class Schedular {
               jsonMap['sourceType'],
               jsonMap['source'],
               jsonMap['frequency'],
-              jsonMap['volume']);
+              jsonMap['volume'],
+              jsonMap['isSurah']);
         }
       }
     } catch (e) {}

@@ -48,6 +48,16 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  AdhanItem _selectedAdhan = AdhanItem(
+      name: "Azaan 12",
+      path: "https://www.islamcan.com/audio/adhan/azan12.mp3",
+      type: 1);
+  get selectedAdhan => _selectedAdhan;
+  set selectedAdhan(var value) {
+    _selectedAdhan = value;
+    notifyListeners();
+  }
+
   Future getTodayAzaan(FormInputs inputs) async {
     await _apiServices.getAzaanTime(inputs).then((value) {
       if (value != []) {
@@ -95,8 +105,8 @@ class AzaanBloc extends ChangeNotifier {
     TodayAzaan todayAzaan = _todayAzaan;
 
     todayAzaan.prayerTimes?.forEach((key, value) {
-      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value, 0,
-          source, 0, azaanVolumes[azaan[key]]);
+      prayerSchedular.addNewSchedule(key, todayAzaan.gregorianDate, value,
+          selectedAdhan.type, source, 0, azaanVolumes[azaan[key]], false);
     });
   }
 
@@ -149,16 +159,6 @@ class AzaanBloc extends ChangeNotifier {
   get adhanList => _adhanList;
   set adhanList(var value) {
     _adhanList = value;
-    notifyListeners();
-  }
-
-  AdhanItem _selectedAdhan = AdhanItem(
-      name: "Azaan 1",
-      path: "https://www.islamcan.com/audio/adhan/azan1.mp3",
-      type: 1);
-  get selectedAdhan => _selectedAdhan;
-  set selectedAdhan(var value) {
-    _selectedAdhan = value;
     notifyListeners();
   }
 

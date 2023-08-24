@@ -8,6 +8,7 @@ class Task {
   Timer? taskTimer;
   int frequency;
   int sourceType; // 0 device, 1 online
+  bool isSurah;
   var source;
   double volume;
 
@@ -18,6 +19,7 @@ class Task {
       required this.taskTimer,
       required this.frequency,
       required this.sourceType,
+      required this.isSurah,
       required this.source,
       required this.volume});
 
@@ -27,6 +29,7 @@ class Task {
       'date': date,
       'time': time,
       'frequency': frequency,
+      'isSurah': isSurah,
       'sourceType': sourceType,
       'source': source,
       'volume': volume

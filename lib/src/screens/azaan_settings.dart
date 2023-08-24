@@ -65,7 +65,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
       if (type == 1) {
         defaultAdhan = azaanBloc.selectedAdhan;
       } else {
-        defaultAdhan = azaanBloc.adhanList[0];
+        defaultAdhan = azaanBloc.adhanList[8];
       }
       maxValue = azaanBloc.azaanVolumes[0];
     }
@@ -109,9 +109,8 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                     setState(() {
                       type = index!;
                       if (type == 1) {
-                        defaultAdhan = azaanBloc.adhanList[0];
+                        defaultAdhan = azaanBloc.adhanList[8];
                         azaanBloc.selectedAdhan = defaultAdhan;
-                        print(azaanBloc.adhanList[0]);
                       }
                     });
                   },

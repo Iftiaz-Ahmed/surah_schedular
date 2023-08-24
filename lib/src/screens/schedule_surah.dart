@@ -583,7 +583,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               1,
               selectedSurah.source,
               frequencyIndex,
-              volume);
+              volume,
+              true);
         },
         child: const Text(
           'Schedule',
