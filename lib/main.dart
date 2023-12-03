@@ -1,7 +1,7 @@
 // import 'package:args/args.dart';
 // import 'package:dart_chromecast/casting/cast_media.dart';
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+// import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
@@ -9,7 +9,7 @@ import 'package:surah_schedular/src/utils/theme_helpers.dart';
 import 'package:surah_schedular/src/widgets/home.dart';
 import 'package:window_manager/window_manager.dart';
 
-final Logger log = new Logger('Chromecast CLI');
+// final Logger log = new Logger('Chromecast CLI');
 
 void main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();

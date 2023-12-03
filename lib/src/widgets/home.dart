@@ -17,6 +17,7 @@ import '../provider/azaan_bloc.dart';
 import '../screens/schedule_surah.dart';
 import '../utils/color_const.dart';
 import 'azaan_view.dart';
+import 'castAudio.dart';
 import 'method_dropdown.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -396,6 +397,7 @@ class _MyHomePageState extends State<MyHomePage>
               //   deviceName,
               //   style: TextStyle(color: textColor),
               // )
+              CastAudio()
             ],
           ),
         ) // This trailing comma makes auto-formatting nicer for build methods.
