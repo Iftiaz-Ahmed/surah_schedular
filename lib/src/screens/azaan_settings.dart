@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cast/session_manager.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
@@ -9,6 +10,7 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 import '../provider/azaan_bloc.dart';
 import '../utils/color_const.dart';
+import '../widgets/castAudio.dart';
 
 class AzaanSettings extends StatefulWidget {
   const AzaanSettings({Key? key}) : super(key: key);
@@ -25,11 +27,14 @@ class _AzaanSettingsState extends State<AzaanSettings> {
   late AdhanItem defaultAdhan;
   double maxValue = 50.0;
   int prayerIndex = 0;
+  int playback = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    setState(() {
+      playback = CastSessionManager().sessions.isNotEmpty ? 1 : 0;
+    });
   }
 
   Future<void> _pickAudioFiles(AzaanBloc azaanBloc) async {
@@ -249,7 +254,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                 style: TextStyle(color: textColor, fontSize: textSize + 5),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20.0, top: 20.0),
+                padding: const EdgeInsets.only(left: 20.0, top: 10.0),
                 child: ToggleSwitch(
                   minWidth: 100,
                   activeBgColor: const [Colors.green],
@@ -302,9 +307,32 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                     "${maxValue.toInt()}%",
                     style:
                         const TextStyle(color: textColor, fontSize: textSize),
-                  ))
+                  )),
                 ],
               ),
+              const Text(
+                "Set Playback",
+                style: TextStyle(color: textColor, fontSize: textSize + 5),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, top: 10.0),
+                child: ToggleSwitch(
+                  activeBgColor: const [Colors.green],
+                  inactiveBgColor: bgColor,
+                  initialLabelIndex: playback,
+                  totalSwitches: 2,
+                  labels: const ['Device', 'Cast'],
+                  onToggle: (index) {
+                    setState(() {
+                      playback = index!;
+                    });
+                  },
+                ),
+              ),
+              if (playback == 1) const CastAudio()
             ],
           )),
     );

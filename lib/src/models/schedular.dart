@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cast/cast.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
@@ -33,6 +34,31 @@ class Schedular {
 
   bool isPlaying() {
     return player.state == PlayerState.playing ? true : false;
+  }
+
+  void _sendMessagePlayAudio(CastSession session, Task task) {
+    print('_sendMessagePlayVideo');
+
+    var message = {
+      // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+      'contentId': task.source,
+      'contentType': 'audio/mp3',
+      'streamType': 'BUFFERED', // or LIVE
+
+      // Title and cover displayed while buffering
+      'metadata': {
+        'type': 0,
+        'metadataType': 0,
+        'title': task.name,
+      }
+    };
+    //TODO: https://github.com/jonathantribouharet/flutter_cast/issues/28
+    session.sendMessage(CastSession.kNamespaceMedia, {
+      'type': 'LOAD',
+      'autoPlay': true,
+      'currentTime': 0,
+      'media': message,
+    });
   }
 
   void startTimer(Duration duration, Task task, double volume) {
@@ -67,10 +93,15 @@ class Schedular {
             } else {
               await textToSpeech(title).then((value) {
                 Future.delayed(const Duration(seconds: 3), () {
-                  if (task.sourceType == 0) {
-                    player.play(DeviceFileSource(task.source));
+                  if (CastSessionManager().sessions.isNotEmpty) {
+                    _sendMessagePlayAudio(
+                        CastSessionManager().sessions.first, task);
                   } else {
-                    player.play(UrlSource(task.source));
+                    if (task.sourceType == 0) {
+                      player.play(DeviceFileSource(task.source));
+                    } else {
+                      player.play(UrlSource(task.source));
+                    }
                   }
                 });
               });

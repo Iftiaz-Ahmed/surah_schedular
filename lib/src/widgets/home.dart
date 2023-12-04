@@ -17,7 +17,6 @@ import '../provider/azaan_bloc.dart';
 import '../screens/schedule_surah.dart';
 import '../utils/color_const.dart';
 import 'azaan_view.dart';
-import 'castAudio.dart';
 import 'method_dropdown.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -335,69 +334,6 @@ class _MyHomePageState extends State<MyHomePage>
                   ],
                 ),
               ),
-              // Expanded(
-              //     flex: 1,
-              //     child: Row(
-              //       children: [
-              //         ElevatedButton(
-              //             onPressed: () async {
-              //               print('Looking for ChromeCast devices...');
-              //
-              //               // try {
-              //               List<find_chromecast.CastDevice> devices =
-              //                   await find_chromecast.find_chromecasts();
-              //               if (devices.isNotEmpty) {
-              //                 find_chromecast.CastDevice device = devices.first;
-              //                 print(device.name);
-              //                 final CastDevice castDevice = CastDevice(
-              //                   port: device.port,
-              //                   type: '_googlecast._tcp',
-              //                 );
-              //                 CastSender castSender = CastSender(castDevice);
-              //                 await castSender.connect();
-              //                 // Connection successful
-              //                 print("Connection Successfull!");
-              //
-              //                 castSender.launch();
-              //                 // List<CastMedia> mediaList = [
-              //                 //   CastMedia(
-              //                 //     contentId:
-              //                 //         "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3",
-              //                 //     contentType: 'audio/mp3',
-              //                 //   ),
-              //                 // ];
-              //                 //
-              //                 // castSender.loadPlaylist(mediaList);
-              //               } else {
-              //                 // No devices found
-              //                 print("Connection Unsuccessfull!");
-              //               }
-              //               // } catch (e) {
-              //               //   print(e);
-              //               //   setState(() {
-              //               //     deviceName = e.toString();
-              //               //   });
-              //               // }
-              //             },
-              //             child: Text('Click')),
-              //         ElevatedButton(
-              //             onPressed: () {
-              //               player.play(UrlSource(
-              //                   "https://cdn.islamic.network/quran/audio/128/ar.alafasy/6231.mp3"));
-              //             },
-              //             child: Text('Play')),
-              //         ElevatedButton(
-              //             onPressed: () {
-              //               player.pause();
-              //             },
-              //             child: Text('Pause')),
-              //       ],
-              //     )),
-              // Text(
-              //   deviceName,
-              //   style: TextStyle(color: textColor),
-              // )
-              CastAudio()
             ],
           ),
         ) // This trailing comma makes auto-formatting nicer for build methods.
