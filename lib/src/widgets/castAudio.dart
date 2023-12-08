@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:cast/device.dart';
 import 'package:cast/discovery_service.dart';
-import 'package:cast/session.dart';
-import 'package:cast/session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_glow/flutter_glow.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
+
+import '../provider/azaan_bloc.dart';
 
 class CastAudio extends StatefulWidget {
   const CastAudio({Key? key}) : super(key: key);
@@ -13,179 +18,178 @@ class CastAudio extends StatefulWidget {
 }
 
 class _CastAudioState extends State<CastAudio> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Future<List<CastDevice>>? _future;
-  bool _connected = false;
+  bool searchDevice = false;
 
   @override
   void initState() {
     super.initState();
-    _startSearch();
-    setState(() {
-      _connected = CastSessionManager().sessions.isNotEmpty ? true : false;
-    });
+  }
+
+  Future<void> saveDevice(CastDevice device) async {
+    try {
+      print('saveDevice');
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
+      var dv = {
+        'serviceName': device.serviceName,
+        'name': device.name,
+        'host': device.host,
+        'port': device.port,
+        'extras': device.extras
+      };
+      await storage.setItem('castDevice', dv);
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<CastDevice>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text(
-              'Error: ${snapshot.error.toString()}',
-            ),
-          );
-        } else if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        if (snapshot.data!.isEmpty) {
-          return const Column(
-            children: [
-              Center(
-                child: Text(
-                  'No Chromecast founded',
-                  style: TextStyle(color: textColor),
-                ),
-              ),
-            ],
-          );
-        }
-
-        return Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width / 2,
-              padding: EdgeInsets.only(left: 10),
+    AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
+    return Container(
+      key: _scaffoldKey,
+      child: !searchDevice
+          ? Padding(
+              padding: const EdgeInsets.only(left: 20.0, top: 20.0),
               child: Column(
-                children: snapshot.data!.map((device) {
-                  return ListTile(
-                    // tileColor: ,
-                    title: Text(
-                      device.extras['fn'].toString(),
-                      style: const TextStyle(color: textColor),
-                    ),
-                    onTap: () {
-                      // _connectToYourApp(context, device);
-                      _connectAndPlayMedia(context, device);
-                    },
-                  );
-                }).toList(),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          searchDevice = true;
+                        });
+                        _startSearch();
+                      },
+                      child: const Text(
+                        'Search Nearby Devices',
+                        style: TextStyle(color: textColor),
+                      )),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if (azaanBloc.castConnected)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const GlowIcon(
+                              Icons.circle,
+                              color: Colors.green,
+                              size: 14,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              'Connected to ${azaanBloc.castDevice.name}',
+                              style: const TextStyle(
+                                  color: textColor, fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 60,
+                        ),
+                        ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red),
+                            onPressed: () {
+                              // if (CastSessionManager().sessions.first.state ==
+                              //     CastSessionState.connected) {
+                              //   CastSessionManager().endSession(
+                              //       CastSessionManager()
+                              //           .sessions
+                              //           .first
+                              //           .sessionId);
+                              // }
+                              azaanBloc.castConnected = false;
+                              saveDevice(CastDevice(
+                                  serviceName: "",
+                                  name: "",
+                                  host: "",
+                                  port: 0));
+                            },
+                            child: const Text(
+                              'Disconnect',
+                              style: TextStyle(color: textColor),
+                            ))
+                      ],
+                    )
+                ],
               ),
+            )
+          : FutureBuilder<List<CastDevice>>(
+              future: _future,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Error: ${snapshot.error.toString()}',
+                    ),
+                  );
+                } else if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (snapshot.data!.isEmpty) {
+                  Timer(const Duration(seconds: 3), () {
+                    setState(() {
+                      searchDevice = false;
+                    });
+                  });
+                  return const Column(
+                    children: [
+                      Center(
+                        child: Text(
+                          'No Chromecast founded',
+                          style: TextStyle(color: textColor, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Column(
+                        children: snapshot.data!.map((device) {
+                          return ListTile(
+                            // tileColor: ,
+                            title: Text(
+                              device.name.toString(),
+                              style: const TextStyle(color: textColor),
+                            ),
+                            onTap: () {
+                              azaanBloc.castDevice = device;
+                              // azaanBloc
+                              //     .connectToCastDevice(
+                              //         _scaffoldKey.currentContext)
+                              //     .then((value) {});
+                              azaanBloc.castConnected = true;
+                              saveDevice(device);
+
+                              setState(() {
+                                searchDevice = false;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-            if (_connected)
-              ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () {
-                    if (CastSessionManager().sessions.first.state ==
-                        CastSessionState.connected) {
-                      CastSessionManager().endSession(
-                          CastSessionManager().sessions.first.sessionId);
-                    }
-                  },
-                  child: const Text(
-                    'Disconnect',
-                    style: TextStyle(color: textColor),
-                  ))
-          ],
-        );
-      },
     );
   }
 
   void _startSearch() {
     _future = CastDiscoveryService().search();
-  }
-
-  Future<void> _connectToYourApp(
-      BuildContext context, CastDevice object) async {
-    final session = await CastSessionManager().startSession(object);
-
-    session.stateStream.listen((state) {
-      if (state == CastSessionState.connected) {
-        final snackBar = SnackBar(content: Text('Connected'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-        _sendMessageToYourApp(session);
-      }
-    });
-
-    session.messageStream.listen((message) {
-      print('receive message: $message');
-    });
-
-    session.sendMessage(CastSession.kNamespaceReceiver, {
-      'type': 'LAUNCH',
-      'appId': 'Youtube', // set the appId of your app here
-    });
-  }
-
-  void _sendMessageToYourApp(CastSession session) {
-    print('_sendMessageToYourApp');
-
-    session.sendMessage('urn:x-cast:namespace-of-the-app', {
-      'type': 'sample',
-    });
-  }
-
-  Future<void> _connectAndPlayMedia(
-      BuildContext context, CastDevice object) async {
-    final session = await CastSessionManager().startSession(object);
-    setState(() {
-      _connected = CastSessionManager().sessions.isNotEmpty ? true : false;
-    });
-    session.stateStream.listen((state) {
-      if (state == CastSessionState.connected) {
-        final snackBar = SnackBar(content: Text('Connected'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    });
-
-    var index = 0;
-
-    session.messageStream.listen((message) {
-      index += 1;
-
-      print('receive message: $message');
-
-      // if (index == 2) {
-      //   Future.delayed(Duration(seconds: 5)).then((x) {
-      //     _sendMessagePlayVideo(session);
-      //   });
-      // }
-    });
-
-    session.sendMessage(CastSession.kNamespaceReceiver, {
-      'type': 'LAUNCH',
-      'appId': 'CC1AD845', // set the appId of your app here
-    });
-  }
-
-  void _sendMessagePlayVideo(CastSession session) {
-    print('_sendMessagePlayVideo');
-
-    var message = {
-      // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
-      'contentId': 'https://www.islamcan.com/audio/adhan/azan12.mp3',
-      'contentType': 'audio/mp3',
-      'streamType': 'BUFFERED', // or LIVE
-
-      // Title and cover displayed while buffering
-      'metadata': {
-        'type': 0,
-        'metadataType': 0,
-        'title': "Adhan",
-      }
-    };
-
-    session.sendMessage(CastSession.kNamespaceMedia, {
-      'type': 'LOAD',
-      'autoPlay': true,
-      'currentTime': 0,
-      'media': message,
-    });
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cast/device.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
@@ -101,7 +102,8 @@ class _MyHomePageState extends State<MyHomePage>
     return volumes;
   }
 
-  void scheduleDailyFunctionExecution(AzaanBloc azaanBloc) {
+  void scheduleDailyFunctionExecution(
+      AzaanBloc azaanBloc, BuildContext context) {
     DateTime now = DateTime.now();
     DateTime nextMidnight = DateTime(now.year, now.month, now.day + 1);
     Duration durationUntilMidnight = nextMidnight.difference(now);
@@ -109,12 +111,29 @@ class _MyHomePageState extends State<MyHomePage>
       Timer(durationUntilMidnight, () {
         count = 0;
         print("Executing functions at 12:00 AM");
-        initializeData(azaanBloc);
+        initializeData(azaanBloc, context);
       });
     }
   }
 
-  Future<void> initializeData(AzaanBloc azaanBloc) async {
+  Future<CastDevice> getCastDevice() async {
+    CastDevice device =
+        CastDevice(serviceName: "", name: "", host: "", port: 0);
+    try {
+      final LocalStorage storage = LocalStorage('surah_schedular.json');
+      await storage.ready.then((value) {
+        var item = storage.getItem('castDevice');
+        device.serviceName = item['serviceName'];
+        device.name = item['name'];
+        device.port = item['port'];
+        device.host = item['host'];
+        device.extras = item['extras'];
+      });
+    } catch (e) {}
+    return device;
+  }
+
+  Future<void> initializeData(AzaanBloc azaanBloc, BuildContext context) async {
     if (count == 0) {
       count++;
       final FormInputs formInput = azaanBloc.formInputs;
@@ -139,15 +158,25 @@ class _MyHomePageState extends State<MyHomePage>
           azaanBloc.azaanVolumes = value;
         }
       });
+      await getCastDevice().then((value) {
+        azaanBloc.castDevice = value;
+        if (value.name.isNotEmpty) {
+          setState(() {
+            azaanBloc.castConnected = true;
+          });
+        }
+      });
 
-      scheduleDailyFunctionExecution(azaanBloc);
+      // azaanBloc.connectToCastDevice(context);
+
+      scheduleDailyFunctionExecution(azaanBloc, context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
-    initializeData(azaanBloc);
+    initializeData(azaanBloc, context);
 
     return Scaffold(
         appBar: AppBar(
@@ -178,7 +207,10 @@ class _MyHomePageState extends State<MyHomePage>
                         builder: (context) => const ScheduleSurah()),
                   );
                 },
-                child: const Text('Schedule Surah'),
+                child: const Text(
+                  'Schedule Surah',
+                  style: TextStyle(color: textColor),
+                ),
               ),
             ),
           ],

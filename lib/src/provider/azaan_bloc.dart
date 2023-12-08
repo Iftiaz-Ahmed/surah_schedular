@@ -1,8 +1,12 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cast/device.dart';
+import 'package:cast/session.dart';
+import 'package:cast/session_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:surah_schedular/src/models/formInputs.dart';
 import 'package:surah_schedular/src/models/prayerMethod.dart';
 import 'package:surah_schedular/src/models/schedular.dart';
+import 'package:surah_schedular/src/models/task.dart';
 import 'package:surah_schedular/src/models/todaysAzaan.dart';
 import 'package:surah_schedular/src/services/api_services.dart';
 
@@ -11,6 +15,12 @@ import '../models/surah.dart';
 
 class AzaanBloc extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
+
+  late Schedular _schedular;
+
+  AzaanBloc() {
+    _schedular = Schedular(this);
+  }
 
   List _azaanVolumes = [70.0, 70.0, 70.0, 70.0, 70.0];
   get azaanVolumes => _azaanVolumes;
@@ -85,7 +95,7 @@ class AzaanBloc extends ChangeNotifier {
     return _prayerMethodList;
   }
 
-  Schedular _schedular = Schedular();
+  // initialized in constructor
   get schedular => _schedular;
   set schedular(var value) {
     _schedular = value;
@@ -172,5 +182,138 @@ class AzaanBloc extends ChangeNotifier {
       audioFileNames.add(item);
     }
     adhanList = audioFileNames;
+  }
+
+  bool _castConnected = false;
+  bool get castConnected => _castConnected;
+  set castConnected(var value) {
+    _castConnected = value;
+    notifyListeners();
+  }
+
+  CastDevice _castDevice =
+      CastDevice(serviceName: "", name: "", host: "", port: 0);
+  CastDevice get castDevice => _castDevice;
+  set castDevice(var value) {
+    _castDevice = value;
+    notifyListeners();
+  }
+
+  // Future connectToCastDevice(context) async {
+  //   if (castDevice.name.isNotEmpty) {
+  //     final session = await CastSessionManager().startSession(castDevice);
+  //     castConnected = true;
+  //
+  //     var index = 0;
+  //
+  //     session.messageStream.listen((message) {
+  //       index += 1;
+  //
+  //       print('receive message: $message');
+  //     });
+  //
+  //     session.sendMessage(CastSession.kNamespaceReceiver, {
+  //       'type': 'LAUNCH',
+  //       'appId': 'CC1AD845', // set the appId of your app here
+  //     });
+  //
+  //     if (context != null) {
+  //       BuildContext c = context;
+  //       session.stateStream.listen((state) {
+  //         if (state == CastSessionState.connected) {
+  //           var snackBar =
+  //               SnackBar(content: Text('Connected - ${castDevice.name}'));
+  //           ScaffoldMessenger.of(c).showSnackBar(snackBar);
+  //         }
+  //       });
+  //       print(session.state);
+  //     }
+  //   }
+  // }
+
+  late dynamic requestId;
+  late dynamic mediaSessionId;
+  late dynamic castSession;
+
+  Future<void> sendMessagePlayAudio(Task task) async {
+    if (CastSessionManager().sessions.first.state ==
+        CastSessionState.connected) {
+      print('already connected');
+      CastSessionManager()
+          .endSession(CastSessionManager().sessions.first.sessionId);
+    }
+
+    final session = await CastSessionManager().startSession(castDevice);
+    castSession = session;
+    session.stateStream.listen((state) {
+      if (state == CastSessionState.connected) {}
+    });
+
+    var index = 0;
+
+    session.messageStream.listen((message) {
+      index += 1;
+
+      print('receive message: $message');
+      print(index);
+      if (index == 2 || index == 1) {
+        Future.delayed(Duration(seconds: 0)).then((x) {
+          requestId = message['requestId'];
+          _sendMessagePlayVideo(session, task);
+        });
+      }
+
+      if (message['status'] != null &&
+          message['status'][0] != null &&
+          message['status'][0]['playerState'] == 'PLAYING') {
+        mediaSessionId = message['status'][0]['mediaSessionId'];
+      }
+    });
+
+    session.sendMessage(CastSession.kNamespaceReceiver, {
+      'type': 'LAUNCH',
+      'appId': 'CC1AD845', // set the appId of your app here
+    });
+  }
+
+  void _sendMessagePlayVideo(CastSession session, Task task) {
+    print('_sendMessagePlayVideo');
+
+    var message = {
+      // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
+      'contentId': task.source,
+      'contentType': 'audio/mp3',
+      'streamType': 'BUFFERED', // or LIVE
+
+      // Title and cover displayed while buffering
+      'metadata': {
+        'type': 0,
+        'metadataType': 0,
+        'title': task.name,
+      }
+    };
+
+    session.sendMessage(CastSession.kNamespaceMedia, {
+      'type': 'LOAD',
+      'autoPlay': true,
+      'currentTime': 0,
+      'media': message,
+    });
+  }
+
+  Future<void> pauseCastAudio() async {
+    castSession.sendMessage(CastSession.kNamespaceMedia, {
+      'type': 'PAUSE',
+      'requestId': requestId,
+      'mediaSessionId': mediaSessionId,
+    });
+  }
+
+  Future<void> playCastAudio() async {
+    castSession.sendMessage(CastSession.kNamespaceMedia, {
+      'type': 'PLAY',
+      'requestId': requestId,
+      'mediaSessionId': mediaSessionId,
+    });
   }
 }

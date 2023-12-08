@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
-import 'package:cast/session_manager.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/models/adhan.dart';
+import 'package:surah_schedular/src/models/task.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../provider/azaan_bloc.dart';
@@ -32,9 +34,6 @@ class _AzaanSettingsState extends State<AzaanSettings> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      playback = CastSessionManager().sessions.isNotEmpty ? 1 : 0;
-    });
   }
 
   Future<void> _pickAudioFiles(AzaanBloc azaanBloc) async {
@@ -65,6 +64,9 @@ class _AzaanSettingsState extends State<AzaanSettings> {
 
   void initialize(AzaanBloc azaanBloc) {
     if (count == 0) {
+      setState(() {
+        playback = azaanBloc.castConnected ? 1 : 0;
+      });
       count++;
       type = azaanBloc.selectedAdhan.type;
       if (type == 1) {
@@ -225,11 +227,26 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                         print(azaanBloc.selectedAdhan);
                         await FlutterVolumeController.setVolume(maxValue / 100);
                         player.setVolume(maxValue / 100);
-                        if (azaanBloc.selectedAdhan.type == 1) {
-                          player.play(UrlSource(azaanBloc.selectedAdhan.path));
+                        if (azaanBloc.castConnected) {
+                          azaanBloc.sendMessagePlayAudio(Task(
+                              name: "Adhan",
+                              date: "",
+                              time: "",
+                              taskTimer:
+                                  Timer(const Duration(seconds: 0), () {}),
+                              frequency: 0,
+                              sourceType: 0,
+                              isSurah: false,
+                              source: azaanBloc.selectedAdhan.path,
+                              volume: maxValue / 100));
                         } else {
-                          player.play(
-                              DeviceFileSource(azaanBloc.selectedAdhan.path));
+                          if (azaanBloc.selectedAdhan.type == 1) {
+                            player
+                                .play(UrlSource(azaanBloc.selectedAdhan.path));
+                          } else {
+                            player.play(
+                                DeviceFileSource(azaanBloc.selectedAdhan.path));
+                          }
                         }
                       },
                     ),
@@ -240,7 +257,11 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                         size: textSize + 10,
                       ),
                       onPressed: () {
-                        player.stop();
+                        if (azaanBloc.castConnected) {
+                          azaanBloc.pauseCastAudio();
+                        } else {
+                          player.stop();
+                        }
                       },
                     ),
                   ],
