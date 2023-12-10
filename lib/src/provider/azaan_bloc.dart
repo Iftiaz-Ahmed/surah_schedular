@@ -192,7 +192,7 @@ class AzaanBloc extends ChangeNotifier {
   }
 
   CastDevice _castDevice =
-      CastDevice(serviceName: "", name: "", host: "", port: 0);
+  CastDevice(serviceName: "", name: "", host: "", port: 0);
   CastDevice get castDevice => _castDevice;
   set castDevice(var value) {
     _castDevice = value;
@@ -232,18 +232,22 @@ class AzaanBloc extends ChangeNotifier {
   // }
 
   late dynamic requestId;
-  late dynamic mediaSessionId;
+  dynamic mediaSessionId = 1;
   late dynamic castSession;
 
-  Future<void> sendMessagePlayAudio(Task task) async {
-    if (CastSessionManager().sessions.first.state ==
-        CastSessionState.connected) {
-      print('already connected');
+  Future sendMessagePlayAudio(Task task) async {
+    if (castDevice.name.isEmpty) {
+      return;
+    }
+
+    if (CastSessionManager().sessions.isNotEmpty) {
+      // ending session, if already connected
       CastSessionManager()
           .endSession(CastSessionManager().sessions.first.sessionId);
     }
 
-    final session = await CastSessionManager().startSession(castDevice);
+    final session = await CastSessionManager()
+        .startSession(castDevice); // making new connection
     castSession = session;
     session.stateStream.listen((state) {
       if (state == CastSessionState.connected) {}
@@ -256,6 +260,7 @@ class AzaanBloc extends ChangeNotifier {
 
       print('receive message: $message');
       print(index);
+
       if (index == 2 || index == 1) {
         Future.delayed(Duration(seconds: 0)).then((x) {
           requestId = message['requestId'];

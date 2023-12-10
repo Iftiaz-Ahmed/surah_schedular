@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+// import 'package:flutter_azure_tts/flutter_azure_tts.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
@@ -23,14 +24,46 @@ class Schedular {
     return values.map<int>((e) => int.parse(e)).toList();
   }
 
-  Future<void> textToSpeech(String text) async {
+  Future textToSpeech(String text) async {
     FlutterTts flutterTts = FlutterTts();
 
     await flutterTts.setLanguage("en-US");
     await flutterTts.setSpeechRate(0.2);
     await flutterTts.setVolume(1);
     await flutterTts.setVoice({"name": "Karen", "locale": "en-US"});
-    await flutterTts.speak(text);
+
+    // if (azaanBloc.castConnected) {
+    //   return;
+    // }
+
+    await flutterTts.speak(text).then((value) {
+      print('speak');
+      print(value);
+    });
+  }
+
+  Future getTextAudio(text) async {
+    // // Get available voices
+    // final voicesResponse = await AzureTts.getAvailableVoices();
+    //
+    // //Pick an English Neural Voice
+    // final voice = voicesResponse.voices
+    //     .where((element) => element.locale.startsWith("en-"))
+    //     .toList(growable: false)
+    //     .first;
+    //
+    // TtsParams params = TtsParams(
+    //     voice: voice,
+    //     audioFormat: AudioOutputFormat.audio16khz32kBitrateMonoMp3,
+    //     rate: 1.5, // optional prosody rate (default is 1.0)
+    //     text: text);
+    //
+    // final ttsResponse = await AzureTts.getTts(params);
+    //
+    // //Get the audio bytes.
+    // final audioBytes = ttsResponse.audio.buffer.asByteData();
+    //
+    // return audioBytes;
   }
 
   bool isPlaying() {
@@ -41,52 +74,65 @@ class Schedular {
     Timer? newTimer = duration.isNegative
         ? null
         : Timer(duration, () async {
-            AudioPlayer temPlayer = AudioPlayer();
-            FlutterVolumeController.setVolume(volume / 100);
-            player.setVolume(volume / 100);
-            print('Task scheduled at ${task.time} on ${task.date}');
-            print("Executed at ${DateTime.now()}");
-            String title = task.isSurah
-                ? "Now playing  Surah  ${task.name}"
-                : "Now playing   ${task.name} Adhaan";
+      AudioPlayer temPlayer = AudioPlayer();
+      FlutterVolumeController.setVolume(volume / 100);
+      player.setVolume(volume / 100);
+      print('Task scheduled at ${task.time} on ${task.date}');
+      print("Executed at ${DateTime.now()}");
+      String title = task.isSurah
+          ? "Now playing  Surah  ${task.name}"
+          : "Now playing   ${task.name} Adhaan";
 
-            if (player.state == PlayerState.playing) {
-              player.pause().then((value) {
-                temPlayer.setVolume(volume / 100);
-                textToSpeech(title).then((value) {
-                  Future.delayed(const Duration(seconds: 3), () {
-                    //Not controlling cast device yet
-                    if (azaanBloc.castConnected) {
-                      azaanBloc.sendMessagePlayAudio(task);
-                    } else {
-                      if (task.sourceType == 0) {
-                        temPlayer.play(DeviceFileSource(task.source));
-                      } else {
-                        temPlayer.play(UrlSource(task.source));
-                      }
-                      temPlayer.onPlayerComplete.listen((event) async {
-                        await player.resume();
-                      });
-                    }
-                  });
+      if (player.state == PlayerState.playing) {
+        player.pause().then((value) {
+          temPlayer.setVolume(volume / 100);
+          textToSpeech(title).then((value) {
+            Future.delayed(const Duration(seconds: 3), () {
+              //Not controlling cast device yet
+              if (azaanBloc.castConnected) {
+                // azaanBloc.sendMessagePlayAudio(value);
+                azaanBloc.sendMessagePlayAudio(task);
+              } else {
+                if (task.sourceType == 0) {
+                  temPlayer.play(DeviceFileSource(task.source));
+                } else {
+                  temPlayer.play(UrlSource(task.source));
+                }
+                temPlayer.onPlayerComplete.listen((event) async {
+                  await player.resume();
                 });
-              });
+              }
+            });
+          });
+        });
+      } else {
+        await textToSpeech(title).then((value) {
+          Future.delayed(const Duration(seconds: 3), () {
+            if (azaanBloc.castConnected) {
+              // var titleAudio = getTextAudio(task.name);
+              // Task titleTask = Task(
+              //     name: task.name,
+              //     date: "",
+              //     time: "",
+              //     taskTimer: null,
+              //     frequency: 0,
+              //     sourceType: 0,
+              //     isSurah: false,
+              //     source: titleAudio,
+              //     volume: 0);
+              // azaanBloc.sendMessagePlayAudio(titleTask);
+              azaanBloc.sendMessagePlayAudio(task);
             } else {
-              await textToSpeech(title).then((value) {
-                Future.delayed(const Duration(seconds: 3), () {
-                  if (azaanBloc.castConnected) {
-                    azaanBloc.sendMessagePlayAudio(task);
-                  } else {
-                    if (task.sourceType == 0) {
-                      player.play(DeviceFileSource(task.source));
-                    } else {
-                      player.play(UrlSource(task.source));
-                    }
-                  }
-                });
-              });
+              if (task.sourceType == 0) {
+                player.play(DeviceFileSource(task.source));
+              } else {
+                player.play(UrlSource(task.source));
+              }
             }
           });
+        });
+      }
+    });
 
     task.taskTimer = newTimer;
     tasks.add(task);

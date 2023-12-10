@@ -82,117 +82,117 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                 flex: 2,
                 child: surahList.length > 0
                     ? Container(
-                        height: MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                            itemCount: surahList.length ?? 0,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                dense: true,
-                                leading: Text(
-                                  "${index + 1}",
-                                  style: const TextStyle(color: textColor),
-                                ),
-                                title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Flexible(
-                                      flex: 2,
-                                      child: Text(
-                                        surahList[index]['task'].name,
-                                        style: const TextStyle(
-                                            color: textColor,
-                                            overflow: TextOverflow.ellipsis),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      flex: 2,
-                                      child: Text(
-                                        surahList[index]['task'].date,
-                                        style: const TextStyle(
-                                            color: textColor,
-                                            overflow: TextOverflow.ellipsis),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        surahList[index]['task'].time,
-                                        style: const TextStyle(
-                                            color: textColor,
-                                            overflow: TextOverflow.ellipsis),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        frequency[
-                                            surahList[index]['task'].frequency],
-                                        style: const TextStyle(
-                                            color: textColor,
-                                            overflow: TextOverflow.ellipsis),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        "${surahList[index]['task'].volume.toInt()}%",
-                                        style: const TextStyle(
-                                            color: textColor,
-                                            overflow: TextOverflow.ellipsis),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      azaanBloc.schedular.deleteTask(
-                                          surahList[index]['index']);
-                                      count = 0; // required to update data
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.clear,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              );
-                            }),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[
-                              800], // Set your desired background color here
-                          border: Border.all(
-                            color: Colors.black, // Set the border color
-                            width: 1.0, // Set the border width
+                  height: MediaQuery.of(context).size.height,
+                  child: ListView.builder(
+                      itemCount: surahList.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          dense: true,
+                          leading: Text(
+                            "${index + 1}",
+                            style: const TextStyle(color: textColor),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.5), // Set the shadow color
-                              spreadRadius: 2, // Set the spread radius
-                              blurRadius: 4, // Set the blur radius
-                              offset:
-                                  const Offset(0, 2), // Set the shadow offset
+                          title: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                flex: 2,
+                                child: Text(
+                                  surahList[index]['task'].name,
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              Flexible(
+                                flex: 2,
+                                child: Text(
+                                  surahList[index]['task'].date,
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  surahList[index]['task'].time,
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  frequency[
+                                  surahList[index]['task'].frequency],
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              Flexible(
+                                child: Text(
+                                  "${surahList[index]['task'].volume.toInt()}%",
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                azaanBloc.schedular.deleteTask(
+                                    surahList[index]['index']);
+                                count = 0; // required to update data
+                              });
+                              if (azaanBloc.castConnected) {
+                                azaanBloc.pauseCastAudio();
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.clear,
+                              color: Colors.red,
                             ),
-                          ],
-                        ),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 30.0, vertical: 15),
-                        padding: const EdgeInsets.all(15.0),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.width / 5,
-                        child: const Center(
-                          child: Text(
-                            "No Surah Scheduled!",
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontSize: textSize + 4,
-                                letterSpacing: 2,
-                                fontWeight: FontWeight.w500),
                           ),
-                        ),
-                      )),
+                        );
+                      }),
+                )
+                    : Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[800],
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 30.0, vertical: 15),
+                  padding: const EdgeInsets.all(15.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width / 5,
+                  child: const Center(
+                    child: Text(
+                      "No Surah Scheduled!",
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontSize: textSize + 2,
+                          letterSpacing: 2,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                )),
             Expanded(
               flex: 3,
               child: Column(
@@ -213,7 +213,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                           child: Text(
                             'Date',
                             style:
-                                TextStyle(color: textColor, fontSize: textSize),
+                            TextStyle(color: textColor, fontSize: textSize),
                             textAlign: TextAlign.end,
                           ),
                         ),
@@ -232,14 +232,14 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                     color:
-                                        textColor, // Set the desired border color
+                                    textColor, // Set the desired border color
                                     width: 1.0, // Set the border width
                                   ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                     color:
-                                        textColor, // Set the desired border color
+                                    textColor, // Set the desired border color
                                     width: 1.0, // Set the border width
                                   ),
                                 ),
@@ -254,8 +254,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                               onChanged: (value) {
                                 setState(() {
                                   String formattedDate =
-                                      DateFormat('dd-MM-yyyy')
-                                          .format(DateTime.parse(value));
+                                  DateFormat('dd-MM-yyyy')
+                                      .format(DateTime.parse(value));
                                   _scheduledDate.text = formattedDate;
                                 });
                               },
@@ -279,7 +279,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                         child: Text(
                           'Exact Time?',
                           style:
-                              TextStyle(color: textColor, fontSize: textSize),
+                          TextStyle(color: textColor, fontSize: textSize),
                           textAlign: TextAlign.end,
                         ),
                       ),
@@ -312,191 +312,191 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                   ),
                   exactTime
                       ? SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              const Expanded(
-                                flex: 1,
-                                child: Text(
-                                  'Time',
-                                  style: TextStyle(
-                                      color: textColor, fontSize: textSize),
-                                  textAlign: TextAlign.end,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 30,
-                              ),
-                              Expanded(
-                                child: DateTimePicker(
-                                  type: DateTimePickerType.time,
-                                  readOnly: false,
-                                  cursorColor: textColor,
-                                  decoration: const InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            textColor, // Set the desired border color
-                                        width: 1.0, // Set the border width
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color:
-                                            textColor, // Set the desired border color
-                                        width: 1.0, // Set the border width
-                                      ),
-                                    ),
-                                  ),
-                                  style: const TextStyle(
-                                      color: textColor, fontSize: textSize),
-                                  initialValue: _scheduledTime.text,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _scheduledTime.text = val;
-                                      print(_scheduledTime.text);
-                                    });
-                                  },
-                                  validator: (val) {
-                                    print(val);
-                                    return null;
-                                  },
-                                  onSaved: (val) => print(val),
-                                ),
-                              ),
-                            ],
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Expanded(
+                          flex: 1,
+                          child: Text(
+                            'Time',
+                            style: TextStyle(
+                                color: textColor, fontSize: textSize),
+                            textAlign: TextAlign.end,
                           ),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "${prayers[prayerIndex]} time at ${azaanBloc.todayAzaan.getPrayerTime(prayers[prayerIndex])}",
-                              style: const TextStyle(
-                                  color: textColor, fontSize: textSize),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                const Expanded(
-                                  child: Text(
-                                    'When?',
-                                    style: TextStyle(
-                                        color: textColor, fontSize: textSize),
-                                    textAlign: TextAlign.end,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 3,
-                                ),
-                                ToggleSwitch(
-                                  activeBgColor: const [Colors.green],
-                                  inactiveBgColor: bgColor,
-                                  initialLabelIndex: whenIndex,
-                                  totalSwitches: 2,
-                                  labels: const ['BEFORE', 'AFTER'],
-                                  onToggle: (index) {
-                                    setState(() {
-                                      if (index == 0) {
-                                        whenIndex = index!;
-                                      } else {
-                                        whenIndex = index!;
-                                      }
-                                    });
-                                  },
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                ToggleSwitch(
-                                  minWidth: 100,
-                                  activeBgColor: const [Colors.green],
-                                  inactiveBgColor: bgColor,
-                                  initialLabelIndex: prayerIndex,
-                                  totalSwitches: 5,
-                                  labels: const [
-                                    'FAJR',
-                                    'DHUHR',
-                                    'ASR',
-                                    'MAGHRIB',
-                                    'ISHA'
-                                  ],
-                                  onToggle: (index) {
-                                    setState(() {
-                                      if (index == 0) {
-                                        prayerIndex = index!;
-                                      } else {
-                                        prayerIndex = index!;
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                SizedBox(
-                                  width: 50,
-                                  height: 40,
-                                  child: TextFormField(
-                                    style: const TextStyle(
-                                        fontSize: textSize, color: textColor),
-                                    maxLength: 2,
-                                    decoration: const InputDecoration(
-                                      counterText: "",
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 0, horizontal: 10),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color:
-                                              textColor, // Set the desired border color
-                                          width: 1.0, // Set the border width
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color:
-                                              textColor, // Set the desired border color
-                                          width: 1.0, // Set the border width
-                                        ),
-                                      ),
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                    cursorColor: textColor,
-                                    controller: _timeTextController,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 20,
-                                ),
-                                ToggleSwitch(
-                                  activeBgColor: const [Colors.green],
-                                  inactiveBgColor: bgColor,
-                                  initialLabelIndex: unitIndex,
-                                  totalSwitches: 2,
-                                  labels: const ['HOUR', 'MINUTE'],
-                                  onToggle: (index) {
-                                    setState(() {
-                                      if (index == 0) {
-                                        unitIndex = index!;
-                                      } else {
-                                        unitIndex = index!;
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
+                        const SizedBox(
+                          width: 30,
+                        ),
+                        Expanded(
+                          child: DateTimePicker(
+                            type: DateTimePickerType.time,
+                            readOnly: false,
+                            cursorColor: textColor,
+                            decoration: const InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:
+                                  textColor, // Set the desired border color
+                                  width: 1.0, // Set the border width
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:
+                                  textColor, // Set the desired border color
+                                  width: 1.0, // Set the border width
+                                ),
+                              ),
+                            ),
+                            style: const TextStyle(
+                                color: textColor, fontSize: textSize),
+                            initialValue: _scheduledTime.text,
+                            onChanged: (val) {
+                              setState(() {
+                                _scheduledTime.text = val;
+                                print(_scheduledTime.text);
+                              });
+                            },
+                            validator: (val) {
+                              print(val);
+                              return null;
+                            },
+                            onSaved: (val) => print(val),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      : Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "${prayers[prayerIndex]} time at ${azaanBloc.todayAzaan.getPrayerTime(prayers[prayerIndex])}",
+                        style: const TextStyle(
+                            color: textColor, fontSize: textSize),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'When?',
+                              style: TextStyle(
+                                  color: textColor, fontSize: textSize),
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 3,
+                          ),
+                          ToggleSwitch(
+                            activeBgColor: const [Colors.green],
+                            inactiveBgColor: bgColor,
+                            initialLabelIndex: whenIndex,
+                            totalSwitches: 2,
+                            labels: const ['BEFORE', 'AFTER'],
+                            onToggle: (index) {
+                              setState(() {
+                                if (index == 0) {
+                                  whenIndex = index!;
+                                } else {
+                                  whenIndex = index!;
+                                }
+                              });
+                            },
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          ToggleSwitch(
+                            minWidth: 100,
+                            activeBgColor: const [Colors.green],
+                            inactiveBgColor: bgColor,
+                            initialLabelIndex: prayerIndex,
+                            totalSwitches: 5,
+                            labels: const [
+                              'FAJR',
+                              'DHUHR',
+                              'ASR',
+                              'MAGHRIB',
+                              'ISHA'
+                            ],
+                            onToggle: (index) {
+                              setState(() {
+                                if (index == 0) {
+                                  prayerIndex = index!;
+                                } else {
+                                  prayerIndex = index!;
+                                }
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 50,
+                            height: 40,
+                            child: TextFormField(
+                              style: const TextStyle(
+                                  fontSize: textSize, color: textColor),
+                              maxLength: 2,
+                              decoration: const InputDecoration(
+                                counterText: "",
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 0, horizontal: 10),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                    textColor, // Set the desired border color
+                                    width: 1.0, // Set the border width
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                    textColor, // Set the desired border color
+                                    width: 1.0, // Set the border width
+                                  ),
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              cursorColor: textColor,
+                              controller: _timeTextController,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          ToggleSwitch(
+                            activeBgColor: const [Colors.green],
+                            inactiveBgColor: bgColor,
+                            initialLabelIndex: unitIndex,
+                            totalSwitches: 2,
+                            labels: const ['HOUR', 'MINUTE'],
+                            onToggle: (index) {
+                              setState(() {
+                                if (index == 0) {
+                                  unitIndex = index!;
+                                } else {
+                                  unitIndex = index!;
+                                }
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -507,7 +507,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                         child: Text(
                           'Frequency',
                           style:
-                              TextStyle(color: textColor, fontSize: textSize),
+                          TextStyle(color: textColor, fontSize: textSize),
                           textAlign: TextAlign.end,
                         ),
                       ),
@@ -540,9 +540,9 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                     children: [
                       const Flexible(
                           child: Text(
-                        "Volume",
-                        style: TextStyle(color: textColor, fontSize: textSize),
-                      )),
+                            "Volume",
+                            style: TextStyle(color: textColor, fontSize: textSize),
+                          )),
                       Flexible(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width / 2,

@@ -310,10 +310,7 @@ class _MyHomePageState extends State<MyHomePage>
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
-                                      Colors.green, // Set the background color
-                                  textStyle: const TextStyle(
-                                      color: textColor,
-                                      fontSize: 18), // Set the text color
+                                      Colors.green, // Set the background color// Set the text color
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 0.0,
                                       horizontal: 20.0), // Set the padding
@@ -352,7 +349,7 @@ class _MyHomePageState extends State<MyHomePage>
                                     });
                                   });
                                 },
-                                child: const Text('Save Settings'),
+                                child: const Text('Save Settings', style: TextStyle(color: textColor, fontSize: 18),),
                               ),
                             ),
                             Expanded(
