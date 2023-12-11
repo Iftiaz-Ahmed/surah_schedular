@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
-// import 'package:flutter_azure_tts/flutter_azure_tts.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
@@ -40,30 +39,6 @@ class Schedular {
       print('speak');
       print(value);
     });
-  }
-
-  Future getTextAudio(text) async {
-    // // Get available voices
-    // final voicesResponse = await AzureTts.getAvailableVoices();
-    //
-    // //Pick an English Neural Voice
-    // final voice = voicesResponse.voices
-    //     .where((element) => element.locale.startsWith("en-"))
-    //     .toList(growable: false)
-    //     .first;
-    //
-    // TtsParams params = TtsParams(
-    //     voice: voice,
-    //     audioFormat: AudioOutputFormat.audio16khz32kBitrateMonoMp3,
-    //     rate: 1.5, // optional prosody rate (default is 1.0)
-    //     text: text);
-    //
-    // final ttsResponse = await AzureTts.getTts(params);
-    //
-    // //Get the audio bytes.
-    // final audioBytes = ttsResponse.audio.buffer.asByteData();
-    //
-    // return audioBytes;
   }
 
   bool isPlaying() {
@@ -109,18 +84,6 @@ class Schedular {
         await textToSpeech(title).then((value) {
           Future.delayed(const Duration(seconds: 3), () {
             if (azaanBloc.castConnected) {
-              // var titleAudio = getTextAudio(task.name);
-              // Task titleTask = Task(
-              //     name: task.name,
-              //     date: "",
-              //     time: "",
-              //     taskTimer: null,
-              //     frequency: 0,
-              //     sourceType: 0,
-              //     isSurah: false,
-              //     source: titleAudio,
-              //     volume: 0);
-              // azaanBloc.sendMessagePlayAudio(titleTask);
               azaanBloc.sendMessagePlayAudio(task);
             } else {
               if (task.sourceType == 0) {

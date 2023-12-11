@@ -231,9 +231,9 @@ class AzaanBloc extends ChangeNotifier {
   //   }
   // }
 
-  late dynamic requestId;
+  dynamic requestId;
   dynamic mediaSessionId = 1;
-  late dynamic castSession;
+  late dynamic _castSession;
 
   Future sendMessagePlayAudio(Task task) async {
     if (castDevice.name.isEmpty) {
@@ -248,7 +248,7 @@ class AzaanBloc extends ChangeNotifier {
 
     final session = await CastSessionManager()
         .startSession(castDevice); // making new connection
-    castSession = session;
+    _castSession = session;
     session.stateStream.listen((state) {
       if (state == CastSessionState.connected) {}
     });
@@ -268,11 +268,11 @@ class AzaanBloc extends ChangeNotifier {
         });
       }
 
-      if (message['status'] != null &&
-          message['status'][0] != null &&
+      if (message['status'] != null && message['status'] == []) {
+      if (message['status'][0] != [] &&
           message['status'][0]['playerState'] == 'PLAYING') {
         mediaSessionId = message['status'][0]['mediaSessionId'];
-      }
+      }}
     });
 
     session.sendMessage(CastSession.kNamespaceReceiver, {
@@ -307,18 +307,22 @@ class AzaanBloc extends ChangeNotifier {
   }
 
   Future<void> pauseCastAudio() async {
-    castSession.sendMessage(CastSession.kNamespaceMedia, {
-      'type': 'PAUSE',
-      'requestId': requestId,
-      'mediaSessionId': mediaSessionId,
-    });
+    if (requestId != null) {
+      _castSession.sendMessage(CastSession.kNamespaceMedia, {
+        'type': 'PAUSE',
+        'requestId': requestId,
+        'mediaSessionId': mediaSessionId,
+      });
+    }
   }
 
   Future<void> playCastAudio() async {
-    castSession.sendMessage(CastSession.kNamespaceMedia, {
-      'type': 'PLAY',
-      'requestId': requestId,
-      'mediaSessionId': mediaSessionId,
-    });
+    if (requestId != null) {
+      _castSession.sendMessage(CastSession.kNamespaceMedia, {
+        'type': 'PLAY',
+        'requestId': requestId,
+        'mediaSessionId': mediaSessionId,
+      });
+    }
   }
 }
