@@ -377,6 +377,7 @@ class _MyHomePageState extends State<MyHomePage>
         context: context,
         builder: (_) {
           return AlertDialog(
+            backgroundColor: Colors.white,
             title: Text('Are you sure you want to close this window?'),
             actions: [
               TextButton(
