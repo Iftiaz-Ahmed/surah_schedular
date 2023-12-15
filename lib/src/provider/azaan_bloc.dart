@@ -181,6 +181,9 @@ class AzaanBloc extends ChangeNotifier {
           type: 1);
       audioFileNames.add(item);
     }
+    audioFileNames.add(AdhanItem(name: "Ahmad Al Nafees", path: "https://drive.google.com/uc?id=1fDuGwaeGVyZ-vReHOs1-Lzftx-UX8txV", type: 1));
+    audioFileNames.add(AdhanItem(name: "Masjid Al-Haram in Mecca", path: "https://drive.google.com/uc?id=1d3T7pjOilSe-CUNf1vCBdv19kQ8o5ZGh", type: 1));
+    audioFileNames.add(AdhanItem(name: "Mishary Rashid Alafasy", path: "https://drive.google.com/uc?id=1ZJMvKFmleqJlOug9d0vjSfOhhrSgdkoy", type: 1));
     adhanList = audioFileNames;
   }
 
