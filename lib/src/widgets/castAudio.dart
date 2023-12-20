@@ -157,29 +157,32 @@ class _CastAudioState extends State<CastAudio> {
                     Container(
                       width: MediaQuery.of(context).size.width / 2,
                       padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        children: snapshot.data!.map((device) {
-                          return ListTile(
-                            // tileColor: ,
-                            title: Text(
-                              device.name.toString(),
-                              style: const TextStyle(color: textColor),
-                            ),
-                            onTap: () {
-                              azaanBloc.castDevice = device;
-                              // azaanBloc
-                              //     .connectToCastDevice(
-                              //         _scaffoldKey.currentContext)
-                              //     .then((value) {});
-                              azaanBloc.castConnected = true;
-                              saveDevice(device);
-
-                              setState(() {
-                                searchDevice = false;
-                              });
-                            },
-                          );
-                        }).toList(),
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: snapshot.data!.map((device) {
+                            return ListTile(
+                              // tileColor: ,
+                              title: Text(
+                                device.name.toString(),
+                                style: const TextStyle(color: textColor),
+                              ),
+                              onTap: () {
+                                azaanBloc.castDevice = device;
+                                // azaanBloc
+                                //     .connectToCastDevice(
+                                //         _scaffoldKey.currentContext)
+                                //     .then((value) {});
+                                azaanBloc.castConnected = true;
+                                saveDevice(device);
+                                            
+                                setState(() {
+                                  searchDevice = false;
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],
@@ -190,6 +193,9 @@ class _CastAudioState extends State<CastAudio> {
   }
 
   void _startSearch() {
+    // try{
+    //
+    // }
     _future = CastDiscoveryService().search();
   }
 }
