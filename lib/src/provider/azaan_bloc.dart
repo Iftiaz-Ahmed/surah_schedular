@@ -4,6 +4,7 @@ import 'package:cast/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:surah_schedular/src/models/formInputs.dart';
+import 'package:surah_schedular/src/models/localData.dart';
 import 'package:surah_schedular/src/models/prayerMethod.dart';
 import 'package:surah_schedular/src/models/schedular.dart';
 import 'package:surah_schedular/src/models/task.dart';
@@ -327,5 +328,26 @@ class AzaanBloc extends ChangeNotifier {
         'mediaSessionId': mediaSessionId,
       });
     }
+  }
+
+  List<String> _surahTaskList = [];
+  List<String> get surahTaskList => _surahTaskList;
+  set surahTaskList(List<String> value) {
+    _surahTaskList = value;
+    notifyListeners();
+  }
+
+  Future<void> saveDataLocally(String calledFrom) async {
+    var device = {
+      'serviceName': castDevice.serviceName,
+      'name': castDevice.name,
+      'host': castDevice.host,
+      'port': castDevice.port,
+      'extras': castDevice.extras
+    };
+
+    LocalData localData = LocalData();
+
+    await localData.saveInfo(formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom=="home"?true:false);
   }
 }

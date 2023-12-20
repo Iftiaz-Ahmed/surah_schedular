@@ -4,7 +4,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/models/adhan.dart';
 import 'package:surah_schedular/src/models/task.dart';
@@ -53,9 +52,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
               type: 0);
         });
 
-        final LocalStorage storage = LocalStorage('surah_schedular.json');
-        await storage.setItem(
-            'selectedAdhan', azaanBloc.selectedAdhan.toJson());
+        azaanBloc.saveDataLocally("azaan settings");
       }
     } catch (e) {
       print("Error picking audio files: $e");
@@ -143,10 +140,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                               azaanBloc.selectedAdhan = defaultAdhan;
                             });
 
-                            final LocalStorage storage =
-                                LocalStorage('surah_schedular.json');
-                            await storage.setItem('selectedAdhan',
-                                azaanBloc.selectedAdhan.toJson());
+                            azaanBloc.saveDataLocally("azaan settings");
                           },
                           items: azaanBloc.adhanList
                               .map<DropdownMenuItem<AdhanItem>>(
@@ -313,12 +307,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                             azaanBloc.azaanVolumes[prayerIndex] = maxValue;
                           });
 
-                          try {
-                            final LocalStorage storage =
-                                LocalStorage('surah_schedular.json');
-                            await storage.setItem(
-                                'azaanVolumes', azaanBloc.azaanVolumes);
-                          } catch (e) {}
+                          azaanBloc.saveDataLocally("azaan settings");
                         },
                       ),
                     ),

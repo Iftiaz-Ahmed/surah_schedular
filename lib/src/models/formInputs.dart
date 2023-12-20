@@ -38,21 +38,11 @@ class FormInputs {
     return json;
   }
 
-  Future<void> saveInfo(String data) async {
-    try {
-      if (data.isNotEmpty) {
-        final LocalStorage storage = LocalStorage('surah_schedular.json');
-        await storage.setItem('formInputs', data);
-      }
-    } catch (e) {}
-  }
-
   Future<void> retrieveInfo() async {
     try {
       final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.clear();
       await storage.ready.then((value) {
-        String item = storage.getItem('formInputs');
+        var item = storage.getItem('formInputs');
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;
         latitude = jsonMap['latitude'];
         longitude = jsonMap['longitude'];
@@ -72,4 +62,5 @@ class FormInputs {
       return false;
     }
   }
+
 }

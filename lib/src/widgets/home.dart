@@ -344,8 +344,7 @@ class _MyHomePageState extends State<MyHomePage>
                                         .then((value) {
                                       azaanBloc.setAzaanTimes(
                                           azaanBloc.selectedAdhan.path);
-                                      azaanBloc.formInputs.saveInfo(
-                                          azaanBloc.formInputs.toString());
+                                      azaanBloc.saveDataLocally("home");
                                     });
                                   });
                                 },

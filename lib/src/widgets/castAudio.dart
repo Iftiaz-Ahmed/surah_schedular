@@ -27,21 +27,6 @@ class _CastAudioState extends State<CastAudio> {
     super.initState();
   }
 
-  Future<void> saveDevice(CastDevice device) async {
-    try {
-      print('saveDevice');
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      var dv = {
-        'serviceName': device.serviceName,
-        'name': device.name,
-        'host': device.host,
-        'port': device.port,
-        'extras': device.extras
-      };
-      await storage.setItem('castDevice', dv);
-    } catch (e) {}
-  }
-
   @override
   Widget build(BuildContext context) {
     AzaanBloc azaanBloc = Provider.of<AzaanBloc>(context);
@@ -104,11 +89,7 @@ class _CastAudioState extends State<CastAudio> {
                               //           .sessionId);
                               // }
                               azaanBloc.castConnected = false;
-                              saveDevice(CastDevice(
-                                  serviceName: "",
-                                  name: "",
-                                  host: "",
-                                  port: 0));
+                              azaanBloc.saveDataLocally("cast audio");
                             },
                             child: const Text(
                               'Disconnect',
@@ -174,8 +155,8 @@ class _CastAudioState extends State<CastAudio> {
                                 //         _scaffoldKey.currentContext)
                                 //     .then((value) {});
                                 azaanBloc.castConnected = true;
-                                saveDevice(device);
-                                            
+                                azaanBloc.saveDataLocally("cast audio");
+
                                 setState(() {
                                   searchDevice = false;
                                 });
@@ -193,9 +174,12 @@ class _CastAudioState extends State<CastAudio> {
   }
 
   void _startSearch() {
-    // try{
-    //
-    // }
-    _future = CastDiscoveryService().search();
+    Future.microtask(() {
+      try {
+        _future = CastDiscoveryService().search();
+      } catch (e) {
+        print(e);
+      }
+    });
   }
 }

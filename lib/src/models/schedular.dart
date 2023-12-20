@@ -192,16 +192,14 @@ class Schedular {
   }
 
   Future<void> saveTasks() async {
-    try {
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      List<String> stringTasks = [];
-      for (var item in tasks) {
-        if (item.isSurah) {
-          stringTasks.add(item.toString());
-        }
+    List<String> stringTasks = [];
+    for (var item in tasks) {
+      if (item.isSurah) {
+        stringTasks.add(item.toString());
       }
-      await storage.setItem('tasks', stringTasks);
-    } catch (e) {}
+    }
+    azaanBloc.surahTaskList = stringTasks;
+    azaanBloc.saveDataLocally("schedular");
   }
 
   Future<void> retrieveTasks() async {
