@@ -55,7 +55,7 @@ class Schedular {
       print('Task scheduled at ${task.time} on ${task.date}');
       print("Executed at ${DateTime.now()}");
       String title = task.isSurah
-          ? "Now playing  Surah  ${task.name}"
+          ? task.sourceType == 1 ? "Now playing  Surah  ${task.name}" : "Now playing  ${task.name}"
           : "Now playing   ${task.name} Adhaan";
 
       if (player.state == PlayerState.playing) {

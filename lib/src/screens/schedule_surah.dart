@@ -1,10 +1,12 @@
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/models/surah.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
+import '../Components/input_field.dart';
 import '../provider/azaan_bloc.dart';
 import '../utils/color_const.dart';
 import '../widgets/surah_dropdown.dart';
@@ -18,9 +20,11 @@ class ScheduleSurah extends StatefulWidget {
 
 class _ScheduleSurahState extends State<ScheduleSurah> {
   Surah selectedSurah = Surah(number: 0, name: "", nameMeaning: "", source: "");
+  Surah selectedAudio = Surah(number: 0, name: "", nameMeaning: "", source: "");
   List<String> prayers = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
   List<String> frequency = ['Once', 'Daily', 'Weekly'];
   bool exactTime = true;
+  int surahSource = 1; // from selected list
   int toggleIndex = 0;
   int whenIndex = 1;
   int prayerIndex = 1;
@@ -32,6 +36,8 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
   TextEditingController _timeTextController = TextEditingController();
   TextEditingController _scheduledDate = TextEditingController();
   TextEditingController _scheduledTime = TextEditingController();
+  TextEditingController _link = TextEditingController();
+  List<PlatformFile>? _audioFiles;
 
   void updateData(Surah newData) {
     setState(() {
@@ -57,6 +63,29 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
           surahList.add(data);
         }
       }
+    }
+  }
+
+  Future<void> _pickAudioFiles(AzaanBloc azaanBloc) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.audio,
+        allowMultiple: false,
+      );
+
+      if (result != null) {
+        setState(() {
+          _audioFiles = result.files;
+          print(_audioFiles?.first.name);
+
+          selectedAudio.number = 200;
+          selectedAudio.name = _audioFiles!.first.name.toString();
+          selectedAudio.source = _audioFiles!.first.path.toString();
+          selectedAudio.nameMeaning = 'custom';
+        });
+      }
+    } catch (e) {
+      print("Error picking audio files: $e");
     }
   }
 
@@ -198,8 +227,87 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: ToggleSwitch(
+                      activeBgColor: const [Colors.green],
+                      inactiveBgColor: bgColor,
+                      initialLabelIndex: surahSource,
+                      totalSwitches: 3,
+                      labels: const ['Custom', 'Library', 'Link'],
+                      onToggle: (index) {
+                        setState(() {
+                          surahSource = index!;
+                        });
+                      },
+                    ),
+                  ),
+                  if (surahSource == 1 )
                   SizedBox(
-                      height: 70, child: SurahDropdown(callback: updateData)),
+                      height: 70, child: SurahDropdown(callback: updateData))
+                  else if (surahSource == 0)
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          selectedAudio.nameMeaning == "custom"
+                              ? Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Text(selectedAudio.name,
+                                style: const TextStyle(
+                                    color: textColor,
+                                    fontSize: textSize - 4)),
+                          )
+                              : const Text(''),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                    color:
+                                    Colors.green), // Set the border color
+                                backgroundColor: Colors
+                                    .transparent, // Set the background color// Set the padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Set the border radius
+                                ),
+                              ),
+                              onPressed: () {
+                                _pickAudioFiles(azaanBloc);
+                              },
+                              child: const Text(
+                                'Select Audio File',
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: textSize - 2),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  else if (surahSource == 2)
+                    SizedBox(
+                      width: 500,
+                      child: InputField(
+                        controller: _link,
+                        hintText: "https://download.quranicaudio.com/quran/abdulbaset_mujawwad/112.mp3",
+                        onChanged: (value) {
+                          selectedAudio.number = 201;
+                          selectedAudio.name = "Custom Link";
+                          selectedAudio.source = _link.text;
+                          selectedAudio.nameMeaning = "link";
+                        },
+                      ),
+                    ),
                   const SizedBox(
                     height: 30,
                   ),
@@ -591,16 +699,34 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                   int.parse(_timeTextController.text));
             }
           });
-          print("${selectedSurah.name} - ${selectedSurah.source}");
+
+          if (surahSource == 1) {
+            // for library
           azaanBloc.schedular.addNewSchedule(
               selectedSurah.name,
               _scheduledDate.text,
               _scheduledTime.text,
-              1,
+              surahSource,
               selectedSurah.source,
               frequencyIndex,
               volume,
               true);
+          } else {
+            // for custom and url
+            azaanBloc.schedular.addNewSchedule(
+                selectedAudio.name,
+                _scheduledDate.text,
+                _scheduledTime.text,
+                surahSource,
+                selectedAudio.source,
+                frequencyIndex,
+                volume,
+                true);
+          }
+
+          setState(() {
+            surahSource = 1;
+          });
         },
         child: const Text(
           'Schedule',
