@@ -52,7 +52,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
               type: 0);
         });
 
-        azaanBloc.saveDataLocally("azaan settings");
+        azaanBloc.saveDataLocally("settings");
       }
     } catch (e) {
       print("Error picking audio files: $e");
@@ -140,7 +140,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                               azaanBloc.selectedAdhan = defaultAdhan;
                             });
 
-                            azaanBloc.saveDataLocally("azaan settings");
+                            azaanBloc.saveDataLocally("settings");
                           },
                           items: azaanBloc.adhanList
                               .map<DropdownMenuItem<AdhanItem>>(
@@ -307,7 +307,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                             azaanBloc.azaanVolumes[prayerIndex] = maxValue;
                           });
 
-                          azaanBloc.saveDataLocally("azaan settings");
+                          azaanBloc.saveDataLocally("settings");
                         },
                       ),
                     ),

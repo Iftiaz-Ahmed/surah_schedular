@@ -88,8 +88,9 @@ class _CastAudioState extends State<CastAudio> {
                               //           .first
                               //           .sessionId);
                               // }
+                              azaanBloc.castDevice = CastDevice(serviceName: "", name: "", host: "", port: 0);
                               azaanBloc.castConnected = false;
-                              azaanBloc.saveDataLocally("cast audio");
+                              azaanBloc.saveDataLocally("cast");
                             },
                             child: const Text(
                               'Disconnect',
@@ -155,7 +156,7 @@ class _CastAudioState extends State<CastAudio> {
                                 //         _scaffoldKey.currentContext)
                                 //     .then((value) {});
                                 azaanBloc.castConnected = true;
-                                azaanBloc.saveDataLocally("cast audio");
+                                azaanBloc.saveDataLocally("cast");
 
                                 setState(() {
                                   searchDevice = false;

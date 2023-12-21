@@ -348,6 +348,6 @@ class AzaanBloc extends ChangeNotifier {
 
     LocalData localData = LocalData();
 
-    await localData.saveInfo(formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom=="home"?true:false);
+    await localData.saveInfo(formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom);
   }
 }
