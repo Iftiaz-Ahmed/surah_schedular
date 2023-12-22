@@ -232,7 +232,7 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                               sourceType: 0,
                               isSurah: false,
                               source: azaanBloc.selectedAdhan.path,
-                              volume: maxValue / 100));
+                              volume: maxValue / 100, timeString: ""));
                         } else {
                           if (azaanBloc.selectedAdhan.type == 1) {
                             player
@@ -261,8 +261,22 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                   ],
                 ),
               )),
+              Row(
+                children: [
+                  Checkbox(
+                    value: azaanBloc.playDua,
+                    activeColor: Colors.green,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        azaanBloc.playDua = value!;
+                      });
+                    },
+                  ),
+                  const Text('Play Dua after Adhaan', style: TextStyle(color: textColor),),
+                ],
+              ),
               const SizedBox(
-                height: 30,
+                height: 15,
               ),
               const Text(
                 "Set Volumes",

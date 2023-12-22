@@ -139,7 +139,7 @@ class _CastAudioState extends State<CastAudio> {
                     Container(
                       width: MediaQuery.of(context).size.width / 2,
                       padding: const EdgeInsets.only(left: 10),
-                      height: 200,
+                      height: 130,
                       child: SingleChildScrollView(
                         child: Column(
                           children: snapshot.data!.map((device) {

@@ -11,6 +11,7 @@ class Task {
   bool isSurah;
   var source;
   double volume;
+  String timeString;
 
   Task(
       {required this.name,
@@ -21,7 +22,8 @@ class Task {
       required this.sourceType,
       required this.isSurah,
       required this.source,
-      required this.volume});
+      required this.volume,
+      required this.timeString});
 
   Map<String, dynamic> toJson() {
     return {
@@ -32,7 +34,8 @@ class Task {
       'isSurah': isSurah,
       'sourceType': sourceType,
       'source': source,
-      'volume': volume
+      'volume': volume,
+      'timeString': timeString
     };
   }
 

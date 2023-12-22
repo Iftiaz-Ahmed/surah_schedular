@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cast/cast.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
@@ -46,6 +47,7 @@ class Schedular {
   }
 
   void startTimer(Duration duration, Task task, double volume) {
+
     Timer? newTimer = duration.isNegative
         ? null
         : Timer(duration, () async {
@@ -63,9 +65,7 @@ class Schedular {
           temPlayer.setVolume(volume / 100);
           textToSpeech(title).then((value) {
             Future.delayed(const Duration(seconds: 3), () {
-              //Not controlling cast device yet
               if (azaanBloc.castConnected) {
-                // azaanBloc.sendMessagePlayAudio(value);
                 azaanBloc.sendMessagePlayAudio(task);
               } else {
                 if (task.sourceType == 0) {
@@ -95,6 +95,13 @@ class Schedular {
           });
         });
       }
+
+      if (!task.isSurah && azaanBloc.playDua) {
+        AudioPlayer duaPlayer = AudioPlayer();
+        player.onPlayerComplete.listen((event) {
+          duaPlayer.play(UrlSource("https://drive.google.com/uc?id=1w-z33xIW4_5Xp6TFsJLC2_fE0It3LKrY"));
+        });
+      }
     });
 
     task.taskTimer = newTimer;
@@ -113,7 +120,8 @@ class Schedular {
       String source,
       int frequency,
       double volume,
-      bool isSurah) async {
+      bool isSurah,
+      String timeString) async {
     List convertedDate = convertDateTime(date, "-");
     List convertedTime = convertDateTime(time, ":");
 
@@ -151,7 +159,8 @@ class Schedular {
         sourceType: scheduleType,
         isSurah: isSurah,
         source: source,
-        volume: volume);
+        volume: volume,
+        timeString: timeString);
     startTimer(duration, task, volume);
 
     scheduleCount++;
@@ -223,7 +232,8 @@ class Schedular {
               jsonMap['source'],
               jsonMap['frequency'],
               jsonMap['volume'],
-              jsonMap['isSurah']);
+              jsonMap['isSurah'],
+              jsonMap['timeString']);
         }
       }
     } catch (e) {}

@@ -66,6 +66,21 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
     }
   }
 
+  String convertTo12hrFormat(String time24hr) {
+    List<String> parts = time24hr.split(':');
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+
+    String period = (hours < 12) ? 'AM' : 'PM';
+
+    hours = hours % 12;
+    hours = (hours == 0) ? 12 : hours;
+
+    String time12hr = '$hours:${minutes.toString().padLeft(2, '0')} $period';
+
+    return time12hr;
+  }
+
   Future<void> _pickAudioFiles(AzaanBloc azaanBloc) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -108,7 +123,6 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
         child: Row(
           children: [
             Expanded(
-                flex: 2,
                 child: surahList.length > 0
                     ? Container(
                   height: MediaQuery.of(context).size.height,
@@ -117,14 +131,15 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                       itemBuilder: (context, index) {
                         return ListTile(
                           dense: true,
+                          horizontalTitleGap: 20,
+                          minLeadingWidth: 2,
                           leading: Text(
                             "${index + 1}",
-                            style: const TextStyle(color: textColor),
+                            style: const TextStyle(color: textColor, fontSize: 14),
                           ),
                           title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
                             children: [
                               Flexible(
                                 flex: 2,
@@ -135,6 +150,25 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                       overflow: TextOverflow.ellipsis),
                                 ),
                               ),
+                              const SizedBox(width: 15,),
+                              Text("Frequency: ${frequency[
+                                surahList[index]['task'].frequency]}", style: const TextStyle(
+                                    color: textColor,
+                                    overflow: TextOverflow.ellipsis),),
+                              const SizedBox(width: 15,),
+                              Flexible(
+                                child: Text(
+                                  "${surahList[index]['task'].volume.toInt()}%",
+                                  style: const TextStyle(
+                                      color: textColor,
+                                      overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                            ],
+                          ),
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
                               Flexible(
                                 flex: 2,
                                 child: Text(
@@ -144,30 +178,14 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                                       overflow: TextOverflow.ellipsis),
                                 ),
                               ),
-                              Flexible(
-                                child: Text(
-                                  surahList[index]['task'].time,
-                                  style: const TextStyle(
-                                      color: textColor,
-                                      overflow: TextOverflow.ellipsis),
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  frequency[
-                                  surahList[index]['task'].frequency],
-                                  style: const TextStyle(
-                                      color: textColor,
-                                      overflow: TextOverflow.ellipsis),
-                                ),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  "${surahList[index]['task'].volume.toInt()}%",
-                                  style: const TextStyle(
-                                      color: textColor,
-                                      overflow: TextOverflow.ellipsis),
-                                ),
+                              const SizedBox(width: 5,),
+                              Text(
+                                surahList[index]['task'].timeString.toString().isEmpty ?
+                                convertTo12hrFormat(surahList[index]['task'].time)
+                                    :surahList[index]['task'].timeString,
+                                style: const TextStyle(
+                                    color: textColor,
+                                    overflow: TextOverflow.ellipsis),
                               ),
                             ],
                           ),
@@ -223,7 +241,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                   ),
                 )),
             Expanded(
-              flex: 3,
+              flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -480,7 +498,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        "${prayers[prayerIndex]} time at ${azaanBloc.todayAzaan.getPrayerTime(prayers[prayerIndex])}",
+                        "${prayers[prayerIndex]} time at ${convertTo12hrFormat(azaanBloc.todayAzaan.getPrayerTime(prayers[prayerIndex]))}",
                         style: const TextStyle(
                             color: textColor, fontSize: textSize),
                       ),
@@ -583,9 +601,10 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                             ),
                           ),
                           const SizedBox(
-                            width: 20,
+                            width: 10,
                           ),
                           ToggleSwitch(
+                            minWidth: 80,
                             activeBgColor: const [Colors.green],
                             inactiveBgColor: bgColor,
                             initialLabelIndex: unitIndex,
@@ -689,6 +708,15 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
           ),
         ),
         onPressed: () {
+          String timeString = "";
+          if (!exactTime) {
+            if (whenIndex == 0) {
+              timeString = unitIndex==0 ? "${_timeTextController.text} hour/s before ${prayers[prayerIndex]}" : "${_timeTextController.text} minute/s before ${prayers[prayerIndex]}";
+            } else {
+              timeString = unitIndex==0 ? "${_timeTextController.text} hour/s after ${prayers[prayerIndex]}" : "${_timeTextController.text} minute/s after ${prayers[prayerIndex]}";
+            }
+          }
+
           setState(() {
             count = 0; // required to update data
             if (toggleIndex == 1) {
@@ -710,7 +738,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               selectedSurah.source,
               frequencyIndex,
               volume,
-              true);
+              true, timeString);
           } else {
             // for custom and url
             azaanBloc.schedular.addNewSchedule(
@@ -721,7 +749,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                 selectedAudio.source,
                 frequencyIndex,
                 volume,
-                true);
+                true, timeString);
           }
 
           setState(() {

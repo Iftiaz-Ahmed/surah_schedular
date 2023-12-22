@@ -117,7 +117,7 @@ class AzaanBloc extends ChangeNotifier {
 
     todayAzaan.prayerTimes?.forEach((key, value) {
       schedular.addNewSchedule(key, todayAzaan.gregorianDate, value,
-          _selectedAdhan.type, source, 0, azaanVolumes[azaan[key]], false);
+          _selectedAdhan.type, source, 0, azaanVolumes[azaan[key]], false, "");
     });
   }
 
@@ -203,43 +203,12 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future connectToCastDevice(context) async {
-  //   if (castDevice.name.isNotEmpty) {
-  //     final session = await CastSessionManager().startSession(castDevice);
-  //     castConnected = true;
-  //
-  //     var index = 0;
-  //
-  //     session.messageStream.listen((message) {
-  //       index += 1;
-  //
-  //       print('receive message: $message');
-  //     });
-  //
-  //     session.sendMessage(CastSession.kNamespaceReceiver, {
-  //       'type': 'LAUNCH',
-  //       'appId': 'CC1AD845', // set the appId of your app here
-  //     });
-  //
-  //     if (context != null) {
-  //       BuildContext c = context;
-  //       session.stateStream.listen((state) {
-  //         if (state == CastSessionState.connected) {
-  //           var snackBar =
-  //               SnackBar(content: Text('Connected - ${castDevice.name}'));
-  //           ScaffoldMessenger.of(c).showSnackBar(snackBar);
-  //         }
-  //       });
-  //       print(session.state);
-  //     }
-  //   }
-  // }
-
   dynamic requestId;
   dynamic mediaSessionId = 1;
   late dynamic _castSession;
 
   Future sendMessagePlayAudio(Task task) async {
+    print(task.name);
     if (castDevice.name.isEmpty) {
       return;
     }
@@ -272,17 +241,37 @@ class AzaanBloc extends ChangeNotifier {
         });
       }
 
-      if (message['status'] != null && message['status'] == []) {
-      if (message['status'][0] != [] &&
-          message['status'][0]['playerState'] == 'PLAYING') {
-        mediaSessionId = message['status'][0]['mediaSessionId'];
-      }}
+      try{
+        if (message['status'] != null && message['status'] == []) {
+          if (message['status'][0] != [] &&
+              message['status'][0]['playerState'] == 'PLAYING') {
+            mediaSessionId = message['status'][0]['mediaSessionId'];
+          }}
+
+        if (message['status'][0]['idleReason'] == "FINISHED") {
+          if (!task.isSurah && playDua) {
+            Task dua = Task(
+                name: "Azaan Dua",
+                date: task.date,
+                time: task.time,
+                taskTimer: task.taskTimer,
+                frequency: task.frequency,
+                sourceType: task.sourceType,
+                isSurah: true,
+                source: "https://drive.google.com/uc?id=1w-z33xIW4_5Xp6TFsJLC2_fE0It3LKrY",
+                volume: task.volume,
+                timeString: task.timeString);
+            sendMessagePlayAudio(dua);
+          }
+        }
+      } catch(e) {}
     });
 
     session.sendMessage(CastSession.kNamespaceReceiver, {
       'type': 'LAUNCH',
       'appId': 'CC1AD845', // set the appId of your app here
     });
+
   }
 
   void _sendMessagePlayVideo(CastSession session, Task task) {
@@ -349,5 +338,12 @@ class AzaanBloc extends ChangeNotifier {
     LocalData localData = LocalData();
 
     await localData.saveInfo(formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom);
+  }
+
+  bool _playDua = true;
+  bool get playDua => _playDua;
+  set playDua(bool value) {
+    _playDua = value;
+    notifyListeners();
   }
 }
