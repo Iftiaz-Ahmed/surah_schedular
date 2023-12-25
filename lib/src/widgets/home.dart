@@ -19,6 +19,7 @@ import '../screens/schedule_surah.dart';
 import '../utils/color_const.dart';
 import 'azaan_view.dart';
 import 'method_dropdown.dart';
+import 'package:surah_schedular/src/models/schedular.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({key, required this.title});
@@ -111,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage>
       Timer(durationUntilMidnight, () {
         count = 0;
         print("Executing functions at 12:00 AM");
+        azaanBloc.schedular.retrieveTasks();
         initializeData(azaanBloc, context);
       });
     }
@@ -166,8 +168,6 @@ class _MyHomePageState extends State<MyHomePage>
           });
         }
       });
-
-      // azaanBloc.connectToCastDevice(context);
 
       scheduleDailyFunctionExecution(azaanBloc, context);
     }

@@ -32,9 +32,9 @@ class Schedular {
     await flutterTts.setVolume(1);
     await flutterTts.setVoice({"name": "Karen", "locale": "en-US"});
 
-    // if (azaanBloc.castConnected) {
-    //   return;
-    // }
+    if (azaanBloc.castConnected) {
+      return;
+    }
 
     await flutterTts.speak(text).then((value) {
       print('speak');
@@ -47,7 +47,7 @@ class Schedular {
   }
 
   void startTimer(Duration duration, Task task, double volume) {
-
+    print("Name: ${task.name},  Duration ${duration.toString()}");
     Timer? newTimer = duration.isNegative
         ? null
         : Timer(duration, () async {
@@ -149,7 +149,6 @@ class Schedular {
     }
 
     var duration = desiredTime.difference(currentTime);
-
     Task task = Task(
         name: name,
         date: date,
@@ -215,7 +214,7 @@ class Schedular {
     try {
       tasks.clear();
       final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.clear();
+      // await storage.clear();
       List items = [];
       await storage.ready.then((value) {
         items = storage.getItem('tasks') ?? [];
