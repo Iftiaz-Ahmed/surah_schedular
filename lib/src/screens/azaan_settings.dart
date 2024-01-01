@@ -25,7 +25,6 @@ class _AzaanSettingsState extends State<AzaanSettings> {
   int count = 0;
   int type = 0;
   List<PlatformFile>? _audioFiles;
-  late AdhanItem defaultAdhan;
   double maxValue = 50.0;
   int prayerIndex = 0;
   int playback = 0;
@@ -66,11 +65,6 @@ class _AzaanSettingsState extends State<AzaanSettings> {
       });
       count++;
       type = azaanBloc.selectedAdhan.type;
-      if (type == 1) {
-        defaultAdhan = azaanBloc.selectedAdhan;
-      } else {
-        defaultAdhan = azaanBloc.adhanList[8];
-      }
       maxValue = azaanBloc.azaanVolumes[0];
     }
   }
@@ -113,8 +107,9 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                     setState(() {
                       type = index!;
                       if (type == 1) {
-                        defaultAdhan = azaanBloc.adhanList[8];
-                        azaanBloc.selectedAdhan = defaultAdhan;
+                        if (azaanBloc.selectedAdhan.type == 0) {
+                          azaanBloc.selectedAdhan = azaanBloc.adhanList[11];
+                        }
                       }
                     });
                   },
@@ -133,11 +128,10 @@ class _AzaanSettingsState extends State<AzaanSettings> {
                           dropdownColor: Colors.black,
                           autofocus: false,
                           focusColor: Colors.transparent,
-                          value: defaultAdhan,
+                          value: azaanBloc.selectedAdhan,
                           onChanged: (newValue) async {
                             setState(() {
-                              defaultAdhan = newValue!;
-                              azaanBloc.selectedAdhan = defaultAdhan;
+                              azaanBloc.selectedAdhan = newValue!;
                             });
 
                             azaanBloc.saveDataLocally("settings");

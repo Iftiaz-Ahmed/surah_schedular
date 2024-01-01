@@ -48,7 +48,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
   @override
   void initState() {
     super.initState();
-    _timeTextController.text = "00";
+    _timeTextController.text = "10";
     _scheduledDate.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     _scheduledTime.text = DateFormat('HH:mm').format(DateTime.now());
   }
@@ -724,7 +724,7 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
                   prayers[prayerIndex],
                   whenIndex,
                   unitIndex,
-                  int.parse(_timeTextController.text));
+                  int.parse(_timeTextController.text)).toString();
             }
           });
 

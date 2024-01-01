@@ -91,7 +91,7 @@ class AzaanView extends StatelessWidget {
                       flex: 1,
                       child: Center(
                         child: Text(
-                          'Prayer timings showing for ${azaanBloc.formInputs.city}${azaanBloc.formInputs.country != '' && azaanBloc.formInputs.country != null ? ', ${azaanBloc.formInputs.country}' : ''}${azaanBloc.formInputs.zipcode != '' && azaanBloc.formInputs.zipcode != null ? ', ${azaanBloc.formInputs.zipcode} ' : ''}',
+                          'Prayer timings for ${azaanBloc.formInputs.address}',
                           style: const TextStyle(
                               color: Colors.green,
                               fontSize: textSize - 3,
@@ -123,7 +123,7 @@ class AzaanView extends StatelessWidget {
                 ],
               ),
               margin: const EdgeInsets.symmetric(
-                  horizontal: 30.0, vertical: 15),
+                  horizontal: 30.0, vertical: 30),
               padding: const EdgeInsets.all(15.0),
               width: MediaQuery.of(context).size.width,
               child: const Center(

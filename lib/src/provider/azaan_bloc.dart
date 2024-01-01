@@ -38,13 +38,6 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List> getLatLng(FormInputs inputs) async {
-    List list = [];
-    list = await _apiServices.getLatLng(inputs) ?? [];
-
-    return list;
-  }
-
   TodayAzaan _todayAzaan = TodayAzaan();
   get todayAzaan => _todayAzaan;
   set todayAzaan(var value) {
@@ -103,12 +96,6 @@ class AzaanBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Schedular _surahSchedular = Schedular();
-  // get surahSchedular => _surahSchedular;
-  // set surahSchedular(var value) {
-  //   _surahSchedular = value;
-  //   notifyListeners();
-  // }
 
   Future<void> setAzaanTimes(source) async {
     Map azaan = {"Fajr": 0, "Dhuhr": 1, "Asr": 2, "Maghrib": 3, "Isha": 4};
@@ -143,7 +130,6 @@ class AzaanBloc extends ChangeNotifier {
     DateTime azaanTime = DateFormat('HH:mm').parse(prayerTime!);
     DateTime calculatedTime = DateTime.now();
 
-    print("before ${format.format(azaanTime)}");
 
     if (when == 0) {
       // set time before the prayer
@@ -162,7 +148,7 @@ class AzaanBloc extends ChangeNotifier {
         calculatedTime = azaanTime.add(Duration(minutes: time));
       }
     }
-
+    print("cal method ${format.format(calculatedTime)}");
     return format.format(calculatedTime);
   }
 
@@ -231,8 +217,8 @@ class AzaanBloc extends ChangeNotifier {
     session.messageStream.listen((message) {
       index += 1;
 
-      print('receive message: $message');
-      print(index);
+      // print('receive message: $message');
+      // print(index);
 
       if (index == 2 || index == 1) {
         Future.delayed(Duration(seconds: 0)).then((x) {

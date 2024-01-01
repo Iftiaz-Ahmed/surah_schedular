@@ -8,6 +8,7 @@ import 'package:flutter_volume_controller/flutter_volume_controller.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:surah_schedular/src/models/task.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
+import '../models/formInputs.dart';
 
 class Schedular {
   final player = AudioPlayer();
@@ -15,9 +16,7 @@ class Schedular {
   int scheduleCount = 0;
   List<Task> tasks = [];
 
-  Schedular(this.azaanBloc) {
-    retrieveTasks();
-  }
+  Schedular(this.azaanBloc);
 
   List<int> convertDateTime(String dateTime, String separator) {
     List<String> values = dateTime.split(separator);
@@ -104,6 +103,10 @@ class Schedular {
       }
     });
 
+    if (newTimer != null) {
+      print("timer is set and should play");
+    }
+
     task.taskTimer = newTimer;
     tasks.add(task);
   }
@@ -129,11 +132,31 @@ class Schedular {
     DateTime desiredTime = DateTime(convertedDate[2], convertedDate[1],
         convertedDate[0], convertedTime[0], convertedTime[1], 0);
 
+    if (timeString!="") { //recalculating time
+        int whenIndex = 0;
+        int unitIndex = 0;
+        int t = 0;
+        if (timeString.contains("before")) whenIndex = 0; else whenIndex = 1;
+        if (timeString.contains("hour")) unitIndex = 0; else unitIndex = 1;
+
+        List<String> parts = timeString.split(" ");
+        try {
+          t = int.parse(parts[0]);
+        } catch (e) {}
+        String prayer = parts[3];
+        String calTime = "";
+
+          calTime = azaanBloc.calculateScheduleTime(prayer, whenIndex, unitIndex, t);
+          convertedTime = convertDateTime(calTime.toString(), ":");
+
+    }
+
     if (frequency == 0) {
       // functions for once freq.
     } else if (frequency == 1) {
       desiredTime = DateTime(currentTime.year, currentTime.month,
           currentTime.day, convertedTime[0], convertedTime[1], 0);
+      date = "${currentTime.day}-${currentTime.month}-${currentTime.year}";
     } else if (frequency == 2) {
       int todayWeekday = currentTime.weekday;
       int weekday = desiredTime.weekday;
@@ -142,6 +165,7 @@ class Schedular {
             currentTime.day, convertedTime[0], convertedTime[1], 0);
         if (currentTime.isAfter(desiredTime)) {
           desiredTime = desiredTime.add(Duration(days: 7));
+          date = "${currentTime.day}-${currentTime.month}-${currentTime.year}";
         }
       } else {
         return;
@@ -163,7 +187,9 @@ class Schedular {
     startTimer(duration, task, volume);
 
     scheduleCount++;
-    saveTasks();
+    if (isSurah) {
+      saveTasks();
+    }
   }
 
   Future<void> stopPlayer() async {
@@ -195,7 +221,7 @@ class Schedular {
 
   void printActiveTasks() {
     tasks.forEach((element) {
-      print("${element.name} scheduled at ${element.time}");
+      print("${element.name} scheduled at ${element.time} ${element.date} ${element.frequency}");
     });
   }
 
@@ -210,9 +236,14 @@ class Schedular {
     azaanBloc.saveDataLocally("schedular");
   }
 
+  void removeSurahTasks(List<Task> tasks) {
+    tasks.removeWhere((task) => task.isSurah);
+  }
+
   Future<void> retrieveTasks() async {
     try {
-      tasks.clear();
+      // tasks.clear();
+      removeSurahTasks(tasks);
       final LocalStorage storage = LocalStorage('surah_schedular.json');
       // await storage.clear();
       List items = [];

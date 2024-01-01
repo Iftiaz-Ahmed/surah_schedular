@@ -20,6 +20,7 @@ import '../utils/color_const.dart';
 import 'azaan_view.dart';
 import 'method_dropdown.dart';
 import 'package:surah_schedular/src/models/schedular.dart';
+import 'package:flutter_mapbox_autocomplete/flutter_mapbox_autocomplete.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({key, required this.title});
@@ -33,11 +34,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with WindowListener, TrayListener {
   int count = 0;
-  final TextEditingController _zipController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
   String deviceName = "";
   final player = AudioPlayer();
+  final _addressController = TextEditingController();
 
   @override
   void initState() {
@@ -112,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage>
       Timer(durationUntilMidnight, () {
         count = 0;
         print("Executing functions at 12:00 AM");
-        azaanBloc.schedular.retrieveTasks();
         initializeData(azaanBloc, context);
       });
     }
@@ -141,11 +139,10 @@ class _MyHomePageState extends State<MyHomePage>
       final FormInputs formInput = azaanBloc.formInputs;
       await formInput.retrieveInfo().then((value) {
         if (!formInput.isEmpty()) {
-          _zipController.text = formInput.zipcode ?? '';
-          _cityController.text = formInput.city ?? '';
-          _countryController.text = formInput.country ?? '';
+          _addressController.text = formInput.address ?? '';
           azaanBloc.getTodayAzaan(formInput).then((value) {
             azaanBloc.setAzaanTimes(azaanBloc.selectedAdhan.path);
+            azaanBloc.schedular.retrieveTasks();
           });
         }
       });
@@ -230,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         body: Container(
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          height: 700,
           child: Column(
             children: [
               Expanded(
@@ -242,119 +239,82 @@ class _MyHomePageState extends State<MyHomePage>
                     Expanded(
                       flex: 6,
                       child: Container(
-                        margin: const EdgeInsets.only(right: 20),
+                        margin: const EdgeInsets.only(top: 40, right: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                width: 300,
-                                child: InputField(
-                                  hintText: 'Enter City',
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      azaanBloc.formInputs.city = value;
-                                    });
-                                  },
-                                  controller: _cityController,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                width: 300,
-                                child: InputField(
-                                  hintText: 'Enter Country',
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      azaanBloc.formInputs.country = value;
-                                    });
-                                  },
-                                  controller: _countryController,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 10),
-                                width: 300,
-                                child: InputField(
-                                  hintText: 'Enter zip code',
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      azaanBloc.formInputs.zipcode = value;
-                                    });
-                                  },
-                                  controller: _zipController,
-                                ),
-                              ),
-                            ),
-                            const Expanded(flex: 2, child: MethodDropdown()),
-                            const Expanded(flex: 2, child: SchoolDropdown()),
-                            const Expanded(
-                              flex: 1,
-                              child: SizedBox(
-                                height: 10,
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Colors.green, // Set the background color// Set the text color
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 0.0,
-                                      horizontal: 20.0), // Set the padding
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        8.0), // Set the border radius
-                                  ),
-                                ),
-                                onPressed: () {
-                                  azaanBloc
-                                      .getLatLng(azaanBloc.formInputs)
-                                      .then((value) {
-                                    if (value.isNotEmpty) {
-                                      setState(() {
-                                        azaanBloc.formInputs.latitude =
-                                            value[0];
-                                        azaanBloc.formInputs.longitude =
-                                            value[1];
-                                        azaanBloc.formInputs.city = value[2];
-                                        azaanBloc.formInputs.country = value[3];
-                                        _cityController.text = value[2];
-                                        _countryController.text = value[3];
-                                      });
-                                    }
-                                    azaanBloc.formInputs.method =
-                                        azaanBloc.formInputs.method ?? 2;
-                                    azaanBloc.formInputs.school =
-                                        azaanBloc.formInputs.school ?? 1;
-                                    azaanBloc
-                                        .getTodayAzaan(azaanBloc.formInputs)
-                                        .then((value) {
-                                      azaanBloc.setAzaanTimes(
-                                          azaanBloc.selectedAdhan.path);
-                                      azaanBloc.saveDataLocally("home");
-                                    });
-                                  });
+                            Container(
+                              width: 550,
+                              child: CustomTextField(
+                                borderRadius: 10,
+                                maxLines: 1,
+                                fontSize: textSize,
+                                textColor: textColor,
+                                fillColor: bgColor.withOpacity(0.1),
+                                hintText: "Enter your address",
+                                textController: _addressController,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MapBoxAutoCompleteWidget(
+                                        apiKey: "pk.eyJ1IjoiaWZ0aWF6MDMiLCJhIjoiY2xxa2poYnMxMXV1YTJrcHEwbmRzaTNkdiJ9.U6pgvF6GW4uefRJZT4hZFQ",
+                                        hint: "Enter your address",
+                                        onSelect: (place) {
+                                          if (place!= null) {
+                                            _addressController.text = place.placeName!;
+                                          }
+                                        },
+                                        limit: 5,
+                                        country: "US",
+                                        textColor: textColor,
+                                        fontSize: textSize,
+                                      ),
+                                    ),
+                                  );
                                 },
-                                child: const Text('Save Settings', style: TextStyle(color: textColor, fontSize: 18),),
+                                enabled: true,
                               ),
                             ),
-                            Expanded(
-                              flex: 8,
-                              child: Container(),
-                            )
+                            SizedBox(
+                              height: 10,
+                            ),
+                            const Flexible(child: MethodDropdown()),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            const Flexible(child: SchoolDropdown()),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                Colors.green,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15.0,
+                                    horizontal: 30.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Set the border radius
+                                ),
+                              ),
+                              onPressed: () {
+                                azaanBloc.formInputs.address = _addressController.text;
+                                azaanBloc.formInputs.method =
+                                    azaanBloc.formInputs.method ?? 2;
+                                azaanBloc.formInputs.school =
+                                    azaanBloc.formInputs.school ?? 1;
+                                azaanBloc
+                                    .getTodayAzaan(azaanBloc.formInputs)
+                                    .then((value) {
+                                  azaanBloc.setAzaanTimes(
+                                      azaanBloc.selectedAdhan.path);
+                                  azaanBloc.saveDataLocally("home");
+                                });
+                              },
+                              child: const Text('Save Settings', style: TextStyle(color: textColor, fontSize: 18),),
+                            ),
                           ],
                         ),
                       ),

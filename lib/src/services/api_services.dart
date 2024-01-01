@@ -10,53 +10,10 @@ import 'package:surah_schedular/src/models/todaysAzaan.dart';
 import '../models/surah.dart';
 
 class ApiServices {
-  Future getLatLng(FormInputs inputs) async {
-    List list = [];
-    try {
-      final response = await http.get(Uri.parse(
-          'http://api.positionstack.com/v1/forward?access_key=0dfd924fc81476c579e666e1a930612c& query=${inputs.zipcode}'));
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-
-        List data = jsonResponse['data'];
-        if (inputs.city.toString().isEmpty || inputs.city == null) {
-          list.add(data[0]["latitude"]);
-          list.add(data[0]["longitude"]);
-          list.add(data[0]["locality"]);
-          list.add(data[0]["country"]);
-        } else {
-          data.forEach((element) {
-            if (element['locality'].toString().toLowerCase() ==
-                inputs.city.toString().toLowerCase()) {
-              list.add(element["latitude"]);
-              list.add(element["longitude"]);
-              list.add(element["locality"]);
-              list.add(element["country"]);
-            }
-          });
-        }
-
-        return list;
-      }
-    } on HttpException {
-      print("http exception");
-    }
-  }
-
   Future getAzaanTime(FormInputs inputs) async {
     TodayAzaan todayAzaan = TodayAzaan();
     try {
-      DateTime date = DateTime.now();
-      String formattedDate = DateFormat('dd-MM-yyyy').format(date);
-      var response;
-      if (inputs.latitude.toString() != "null") {
-        response = await http.get(Uri.parse(
-            'http://api.aladhan.com/v1/timings/$formattedDate?latitude=${inputs.latitude}&longitude=${inputs.longitude}&method=${inputs.method}&school=${inputs.school}'));
-      } else {
-        response = await http.get(Uri.parse(
-            'http://api.aladhan.com/v1/timingsByCity?city=${inputs.city}&country=${inputs.country}&method=${inputs.method}&school=${inputs.school}'));
-      }
+      var response = await http.get(Uri.parse("http://api.aladhan.com/v1/timingsByAddress?address=${inputs.address}&method=${inputs.method}&school=${inputs.school}"));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
