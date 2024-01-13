@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cast/device.dart';
 import 'package:cast/session.dart';
 import 'package:cast/session_manager.dart';
@@ -10,9 +11,11 @@ import 'package:surah_schedular/src/models/schedular.dart';
 import 'package:surah_schedular/src/models/task.dart';
 import 'package:surah_schedular/src/models/todaysAzaan.dart';
 import 'package:surah_schedular/src/services/api_services.dart';
+import 'package:path/path.dart';
 
 import '../models/adhan.dart';
 import '../models/surah.dart';
+
 
 class AzaanBloc extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
@@ -21,6 +24,18 @@ class AzaanBloc extends ChangeNotifier {
 
   AzaanBloc() {
     _schedular = Schedular(this);
+  }
+
+  String getInstallationDirectory() {
+    try {
+      String executablePath = Platform.resolvedExecutable;
+      String installationDirectory = dirname(executablePath);
+
+      return installationDirectory;
+    } catch (e) {
+      print('Error getting installation directory: $e');
+      return "";
+    }
   }
 
   List _azaanVolumes = [70.0, 70.0, 70.0, 70.0, 70.0];
@@ -34,7 +49,6 @@ class AzaanBloc extends ChangeNotifier {
   get formInputs => _formInputs;
   set formInputs(var value) {
     _formInputs = value;
-    print(_formInputs);
     notifyListeners();
   }
 
@@ -148,7 +162,6 @@ class AzaanBloc extends ChangeNotifier {
         calculatedTime = azaanTime.add(Duration(minutes: time));
       }
     }
-    print("cal method ${format.format(calculatedTime)}");
     return format.format(calculatedTime);
   }
 
@@ -168,9 +181,9 @@ class AzaanBloc extends ChangeNotifier {
           type: 1);
       audioFileNames.add(item);
     }
-    audioFileNames.add(AdhanItem(name: "Ahmad Al Nafees", path: "https://drive.google.com/uc?id=1fDuGwaeGVyZ-vReHOs1-Lzftx-UX8txV", type: 1));
-    audioFileNames.add(AdhanItem(name: "Masjid Al-Haram in Mecca", path: "https://drive.google.com/uc?id=1d3T7pjOilSe-CUNf1vCBdv19kQ8o5ZGh", type: 1));
-    audioFileNames.add(AdhanItem(name: "Mishary Rashid Alafasy", path: "https://drive.google.com/uc?id=1ZJMvKFmleqJlOug9d0vjSfOhhrSgdkoy", type: 1));
+    audioFileNames.add(AdhanItem(name: "Ahmad Al Nafees", path: "https://iftiazahmed.com/azaans/Ahmad-Al-Nafees.mp3", type: 1));
+    audioFileNames.add(AdhanItem(name: "Masjid Al-Haram in Mecca", path: "https://iftiazahmed.com/azaans/Masjid-Al-Haram-in-Mecca.mp3", type: 1));
+    audioFileNames.add(AdhanItem(name: "Mishary Rashid Alafasy", path: "https://iftiazahmed.com/azaans/Mishary-Rashid-Alafasy.mp3", type: 1));
     adhanList = audioFileNames;
   }
 
@@ -217,8 +230,6 @@ class AzaanBloc extends ChangeNotifier {
     session.messageStream.listen((message) {
       index += 1;
 
-      // print('receive message: $message');
-      // print(index);
 
       if (index == 2 || index == 1) {
         Future.delayed(Duration(seconds: 0)).then((x) {
@@ -244,7 +255,7 @@ class AzaanBloc extends ChangeNotifier {
                 frequency: task.frequency,
                 sourceType: task.sourceType,
                 isSurah: true,
-                source: "https://drive.google.com/uc?id=1w-z33xIW4_5Xp6TFsJLC2_fE0It3LKrY",
+                source: "https://iftiazahmed.com/azaans/Dua-After-The-Azan.mp3",
                 volume: task.volume,
                 timeString: task.timeString);
             sendMessagePlayAudio(dua);
@@ -261,7 +272,6 @@ class AzaanBloc extends ChangeNotifier {
   }
 
   void _sendMessagePlayVideo(CastSession session, Task task) {
-    print('_sendMessagePlayVideo');
 
     var message = {
       // Here you can plug an URL to any mp4, webm, mp3 or jpg file with the proper contentType.
@@ -322,8 +332,8 @@ class AzaanBloc extends ChangeNotifier {
     };
 
     LocalData localData = LocalData();
-
-    await localData.saveInfo(formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom);
+    String installationDirectory = getInstallationDirectory();
+    await localData.saveInfo(installationDirectory, formInputs, selectedAdhan, surahTaskList, azaanVolumes, device, calledFrom);
   }
 
   bool _playDua = true;

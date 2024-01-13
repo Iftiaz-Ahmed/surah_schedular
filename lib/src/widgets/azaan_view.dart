@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../provider/azaan_bloc.dart';
 import '../utils/color_const.dart';
 
+
 class AzaanView extends StatelessWidget {
   const AzaanView({Key? key}) : super(key: key);
 
@@ -21,6 +22,7 @@ class AzaanView extends StatelessWidget {
 
     return time12hr;
   }
+
 
   @override
   Widget build(BuildContext context) {

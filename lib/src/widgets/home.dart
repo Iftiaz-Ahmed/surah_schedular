@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cast/device.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/screens/azaan_settings.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
@@ -21,6 +21,7 @@ import 'azaan_view.dart';
 import 'method_dropdown.dart';
 import 'package:surah_schedular/src/models/schedular.dart';
 import 'package:flutter_mapbox_autocomplete/flutter_mapbox_autocomplete.dart';
+import 'package:surah_schedular/src/models/localData.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({key, required this.title});
@@ -37,10 +38,13 @@ class _MyHomePageState extends State<MyHomePage>
   String deviceName = "";
   final player = AudioPlayer();
   final _addressController = TextEditingController();
+  String installationDirectory = "";
+  Map<String, dynamic> savedFileData = {};
 
   @override
   void initState() {
     super.initState();
+
     windowManager.addListener(this);
     trayManager.addListener(this);
     _init();
@@ -80,27 +84,11 @@ class _MyHomePageState extends State<MyHomePage>
     setState(() {});
   }
 
-  Future<Map> getSavedAdhanName() async {
-    Map adhan = {};
-    try {
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.ready.then((value) {
-        adhan = storage.getItem('selectedAdhan');
-      });
-    } catch (e) {}
-    return adhan;
+  Future getSavedData() async {
+    LocalData localData = LocalData();
+    savedFileData = await localData.readJsonFile(installationDirectory);
   }
 
-  Future<List> getSavedAzaanVolumes() async {
-    List volumes = [];
-    try {
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.ready.then((value) {
-        volumes = storage.getItem('azaanVolumes');
-      });
-    } catch (e) {}
-    return volumes;
-  }
 
   void scheduleDailyFunctionExecution(
       AzaanBloc azaanBloc, BuildContext context) {
@@ -116,28 +104,43 @@ class _MyHomePageState extends State<MyHomePage>
     }
   }
 
-  Future<CastDevice> getCastDevice() async {
+  CastDevice getCastDevice(var item) {
     CastDevice device =
         CastDevice(serviceName: "", name: "", host: "", port: 0);
-    try {
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      await storage.ready.then((value) {
-        var item = storage.getItem('castDevice');
-        device.serviceName = item['serviceName'];
-        device.name = item['name'];
-        device.port = item['port'];
-        device.host = item['host'];
+
+    if (item!=null) {
+      device.serviceName = item['serviceName'];
+      device.name = item['name'];
+      device.port = item['port'];
+      device.host = item['host'];
+      if (item['extras'] is Map<String, String>) {
         device.extras = item['extras'];
-      });
-    } catch (e) {}
+      }
+    }
+
     return device;
   }
 
   Future<void> initializeData(AzaanBloc azaanBloc, BuildContext context) async {
     if (count == 0) {
       count++;
-      final FormInputs formInput = azaanBloc.formInputs;
-      await formInput.retrieveInfo().then((value) {
+      installationDirectory = azaanBloc.getInstallationDirectory();
+
+      await azaanBloc.getAdhanFileNames();
+      await getSavedData().then((value) {
+        final FormInputs formInput = azaanBloc.formInputs;
+
+        //retrieving selected Adhan
+        azaanBloc.selectedAdhan = AdhanItem.fromJson(savedFileData['selectedAdhan']);
+
+        // retrieving formInputs
+        if (savedFileData['formInputs'] != null) {
+          final jsonMap = jsonDecode(savedFileData['formInputs']) as Map<String, dynamic>;
+          formInput.address = jsonMap['address'];
+          formInput.method = jsonMap['method'];
+          formInput.school = jsonMap['school'];
+        }
+
         if (!formInput.isEmpty()) {
           _addressController.text = formInput.address ?? '';
           azaanBloc.getTodayAzaan(formInput).then((value) {
@@ -145,25 +148,18 @@ class _MyHomePageState extends State<MyHomePage>
             azaanBloc.schedular.retrieveTasks();
           });
         }
-      });
-      await getSavedAdhanName().then((value) {
-        if (value.isNotEmpty) {
-          azaanBloc.selectedAdhan = AdhanItem.fromJson(value);
-        }
-      });
-      await azaanBloc.getAdhanFileNames();
-      await getSavedAzaanVolumes().then((value) {
-        if (value.isNotEmpty) {
-          azaanBloc.azaanVolumes = value;
-        }
-      });
-      await getCastDevice().then((value) {
-        azaanBloc.castDevice = value;
-        if (value.name.isNotEmpty) {
+
+        // retrieving azaan volumes
+        azaanBloc.azaanVolumes = savedFileData['azaanVolumes'];
+
+        //retrieving castDevice
+        azaanBloc.castDevice = getCastDevice(savedFileData['castDevice']);
+        if (azaanBloc.castDevice.name.isNotEmpty) {
           setState(() {
             azaanBloc.castConnected = true;
           });
         }
+
       });
 
       scheduleDailyFunctionExecution(azaanBloc, context);

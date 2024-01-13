@@ -5,10 +5,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cast/cast.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_volume_controller/flutter_volume_controller.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:surah_schedular/src/models/task.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
 import '../models/formInputs.dart';
+import 'package:surah_schedular/src/models/localData.dart';
 
 class Schedular {
   final player = AudioPlayer();
@@ -35,10 +35,7 @@ class Schedular {
       return;
     }
 
-    await flutterTts.speak(text).then((value) {
-      print('speak');
-      print(value);
-    });
+    await flutterTts.speak(text);
   }
 
   bool isPlaying() {
@@ -102,10 +99,6 @@ class Schedular {
         });
       }
     });
-
-    if (newTimer != null) {
-      print("timer is set and should play");
-    }
 
     task.taskTimer = newTimer;
     tasks.add(task);
@@ -242,14 +235,11 @@ class Schedular {
 
   Future<void> retrieveTasks() async {
     try {
-      // tasks.clear();
       removeSurahTasks(tasks);
-      final LocalStorage storage = LocalStorage('surah_schedular.json');
-      // await storage.clear();
-      List items = [];
-      await storage.ready.then((value) {
-        items = storage.getItem('tasks') ?? [];
-      });
+      String installationDirectory = azaanBloc.getInstallationDirectory();
+      LocalData localData = LocalData();
+      Map<String, dynamic> savedFileData = await localData.readJsonFile(installationDirectory);
+      List items = savedFileData['tasks'] ?? [];
 
       for (var item in items) {
         final jsonMap = jsonDecode(item) as Map<String, dynamic>;

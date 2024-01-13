@@ -4,7 +4,6 @@ import 'package:cast/device.dart';
 import 'package:cast/discovery_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_glow/flutter_glow.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/utils/color_const.dart';
 
