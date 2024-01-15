@@ -15,6 +15,7 @@ import 'package:path/path.dart';
 
 import '../models/adhan.dart';
 import '../models/surah.dart';
+import '../models/LogManager.dart';
 
 
 class AzaanBloc extends ChangeNotifier {
@@ -341,5 +342,12 @@ class AzaanBloc extends ChangeNotifier {
   set playDua(bool value) {
     _playDua = value;
     notifyListeners();
+  }
+
+  LogManager _logs = LogManager();
+  LogManager get logs => _logs;
+  set logs(var value) {
+    _logs = value;
+    notifyListeners;
   }
 }

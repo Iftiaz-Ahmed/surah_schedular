@@ -7,13 +7,13 @@ project(runner LANGUAGES CXX)
 #
 # Any new source files that you add to the application should be added here.
 add_executable(${BINARY_NAME} WIN32
-  "flutter_window.cpp"
-  "main.cpp"
-  "utils.cpp"
-  "win32_window.cpp"
-  "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
-  "Runner.rc"
-  "runner.exe.manifest"
+        "flutter_window.cpp"
+        "main.cpp"
+        "utils.cpp"
+        "win32_window.cpp"
+        "${FLUTTER_MANAGED_DIR}/generated_plugin_registrant.cc"
+        "Runner.rc"
+        "runner.exe.manifest"
 )
 
 # Apply the standard set of build settings. This can be removed for applications
@@ -29,6 +29,9 @@ target_compile_definitions(${BINARY_NAME} PRIVATE "FLUTTER_VERSION_BUILD=${FLUTT
 
 # Disable Windows macros that collide with C++ standard library functions.
 target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
+
+# Set requested execution level
+set_target_properties(${BINARY_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\" /SUBSYSTEM:WINDOWS")
 
 # Add dependency libraries and include directories. Add any application-specific
 # dependencies here.

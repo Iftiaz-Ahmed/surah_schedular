@@ -15,8 +15,11 @@ class Schedular {
   final AzaanBloc azaanBloc;
   int scheduleCount = 0;
   List<Task> tasks = [];
+  String installationDirectory = "";
 
-  Schedular(this.azaanBloc);
+  Schedular(this.azaanBloc) {
+    installationDirectory = azaanBloc.getInstallationDirectory();
+  }
 
   List<int> convertDateTime(String dateTime, String separator) {
     List<String> values = dateTime.split(separator);
@@ -44,64 +47,72 @@ class Schedular {
 
   void startTimer(Duration duration, Task task, double volume) {
     print("Name: ${task.name},  Duration ${duration.toString()}");
-    Timer? newTimer = duration.isNegative
-        ? null
-        : Timer(duration, () async {
-      AudioPlayer temPlayer = AudioPlayer();
-      FlutterVolumeController.setVolume(volume / 100);
-      player.setVolume(volume / 100);
-      print('Task scheduled at ${task.time} on ${task.date}');
-      print("Executed at ${DateTime.now()}");
-      String title = task.isSurah
-          ? task.sourceType == 1 ? "Now playing  Surah  ${task.name}" : "Now playing  ${task.name}"
-          : "Now playing   ${task.name} Adhaan";
 
-      if (player.state == PlayerState.playing) {
-        player.pause().then((value) {
-          temPlayer.setVolume(volume / 100);
-          textToSpeech(title).then((value) {
+    try {
+      Timer? newTimer = duration.isNegative
+          ? null
+          : Timer(duration, () async {
+        AudioPlayer temPlayer = AudioPlayer();
+        FlutterVolumeController.setVolume(volume / 100);
+        player.setVolume(volume / 100);
+        print('Task scheduled at ${task.time} on ${task.date}');
+        print("Executed at ${DateTime.now()}");
+        String title = task.isSurah
+            ? task.sourceType == 1 ? "Now playing  Surah  ${task.name}" : "Now playing  ${task.name}"
+            : "Now playing   ${task.name} Adhaan";
+
+        if (player.state == PlayerState.playing) {
+          player.pause().then((value) {
+            temPlayer.setVolume(volume / 100);
+            textToSpeech(title).then((value) {
+              Future.delayed(const Duration(seconds: 3), () {
+                if (azaanBloc.castConnected) {
+                  azaanBloc.sendMessagePlayAudio(task);
+                } else {
+                  if (task.sourceType == 0) {
+                    temPlayer.play(DeviceFileSource(task.source));
+                  } else {
+                    temPlayer.play(UrlSource(task.source));
+                  }
+                  temPlayer.onPlayerComplete.listen((event) async {
+                    await player.resume();
+                  });
+                }
+              });
+            });
+          });
+        } else {
+          await textToSpeech(title).then((value) {
             Future.delayed(const Duration(seconds: 3), () {
               if (azaanBloc.castConnected) {
                 azaanBloc.sendMessagePlayAudio(task);
               } else {
                 if (task.sourceType == 0) {
-                  temPlayer.play(DeviceFileSource(task.source));
+                  player.play(DeviceFileSource(task.source));
                 } else {
-                  temPlayer.play(UrlSource(task.source));
+                  player.play(UrlSource(task.source));
                 }
-                temPlayer.onPlayerComplete.listen((event) async {
-                  await player.resume();
-                });
               }
             });
           });
-        });
-      } else {
-        await textToSpeech(title).then((value) {
-          Future.delayed(const Duration(seconds: 3), () {
-            if (azaanBloc.castConnected) {
-              azaanBloc.sendMessagePlayAudio(task);
-            } else {
-              if (task.sourceType == 0) {
-                player.play(DeviceFileSource(task.source));
-              } else {
-                player.play(UrlSource(task.source));
-              }
-            }
+        }
+
+        //saving log records
+        azaanBloc.logs.saveLogs(installationDirectory, "${task.name} played at ${task.time}");
+
+        if (!task.isSurah && azaanBloc.playDua) {
+          AudioPlayer duaPlayer = AudioPlayer();
+          player.onPlayerComplete.listen((event) {
+            duaPlayer.play(UrlSource("https://drive.google.com/uc?id=1w-z33xIW4_5Xp6TFsJLC2_fE0It3LKrY"));
           });
-        });
-      }
+        }
+      });
 
-      if (!task.isSurah && azaanBloc.playDua) {
-        AudioPlayer duaPlayer = AudioPlayer();
-        player.onPlayerComplete.listen((event) {
-          duaPlayer.play(UrlSource("https://drive.google.com/uc?id=1w-z33xIW4_5Xp6TFsJLC2_fE0It3LKrY"));
-        });
-      }
-    });
-
-    task.taskTimer = newTimer;
-    tasks.add(task);
+      task.taskTimer = newTimer;
+      tasks.add(task);
+    } catch(e) {
+      azaanBloc.logs.saveLogs(installationDirectory, "Error occurred while playing ${task.name} at ${task.time}");
+    }
   }
 
   PlayerState playerState() {
@@ -209,13 +220,13 @@ class Schedular {
   }
 
   void getScheduleCount() {
-    print("Total Schedule: ${scheduleCount}");
+    print("Total Schedule: $scheduleCount");
   }
 
   void printActiveTasks() {
-    tasks.forEach((element) {
+    for (var element in tasks) {
       print("${element.name} scheduled at ${element.time} ${element.date} ${element.frequency}");
-    });
+    }
   }
 
   Future<void> saveTasks() async {
@@ -236,7 +247,6 @@ class Schedular {
   Future<void> retrieveTasks() async {
     try {
       removeSurahTasks(tasks);
-      String installationDirectory = azaanBloc.getInstallationDirectory();
       LocalData localData = LocalData();
       Map<String, dynamic> savedFileData = await localData.readJsonFile(installationDirectory);
       List items = savedFileData['tasks'] ?? [];

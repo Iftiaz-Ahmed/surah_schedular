@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/provider/azaan_bloc.dart';
@@ -5,12 +7,23 @@ import 'package:surah_schedular/src/utils/color_const.dart';
 import 'package:surah_schedular/src/utils/theme_helpers.dart';
 import 'package:surah_schedular/src/widgets/home.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Must add this line.
   await windowManager.ensureInitialized();
+
+  //Open App on Startup
+  if (!kIsWeb) {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    LaunchAtStartup.instance.setup(
+      appName: packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+    );
+  }
 
   WindowOptions windowOptions = const WindowOptions(
     minimumSize: Size(1300, 740),

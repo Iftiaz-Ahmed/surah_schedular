@@ -7,6 +7,7 @@ import 'package:cast/device.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:surah_schedular/src/screens/azaan_settings.dart';
+import 'package:surah_schedular/src/screens/logScreen.dart';
 import 'package:surah_schedular/src/widgets/school_dropdown.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -125,13 +126,17 @@ class _MyHomePageState extends State<MyHomePage>
     if (count == 0) {
       count++;
       installationDirectory = azaanBloc.getInstallationDirectory();
-
+      print(installationDirectory);
+      azaanBloc.logs.readLogFile(installationDirectory);
       await azaanBloc.getAdhanFileNames();
       await getSavedData().then((value) {
         final FormInputs formInput = azaanBloc.formInputs;
 
         //retrieving selected Adhan
-        azaanBloc.selectedAdhan = AdhanItem.fromJson(savedFileData['selectedAdhan']);
+        if (savedFileData['selectedAdhan'] != null) {
+          azaanBloc.selectedAdhan = AdhanItem.fromJson(savedFileData['selectedAdhan']);
+        }
+
 
         // retrieving formInputs
         if (savedFileData['formInputs'] != null) {
@@ -150,10 +155,15 @@ class _MyHomePageState extends State<MyHomePage>
         }
 
         // retrieving azaan volumes
-        azaanBloc.azaanVolumes = savedFileData['azaanVolumes'];
+        if (savedFileData['azaanVolumes']!= null) {
+          azaanBloc.azaanVolumes = savedFileData['azaanVolumes'];
+        }
+
 
         //retrieving castDevice
-        azaanBloc.castDevice = getCastDevice(savedFileData['castDevice']);
+        if (savedFileData['castDevice']!= null) {
+          azaanBloc.castDevice = getCastDevice(savedFileData['castDevice']);
+        }
         if (azaanBloc.castDevice.name.isNotEmpty) {
           setState(() {
             azaanBloc.castConnected = true;
@@ -208,20 +218,45 @@ class _MyHomePageState extends State<MyHomePage>
             ),
           ],
         ),
-        floatingActionButton: IconButton(
-          icon: const Icon(
-            Icons.settings,
-            color: textColor,
-            size: textSize + 10,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AzaanSettings()),
-            );
-          },
+        floatingActionButton: Stack(
+          children: <Widget>[
+            Padding(padding: const EdgeInsets.only(left:31),
+             child: Align(
+              alignment: Alignment.bottomLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.app_registration_rounded,
+                  color: textColor,
+                  size: textSize + 10,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LogScreen()),
+                  );
+                },
+              ),
+            )),
+
+            Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.settings,
+                  color: textColor,
+                  size: textSize + 10,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AzaanSettings()),
+                  );
+                },
+              ),
+            )
+          ]
         ),
-        body: Container(
+        body: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: 700,
           child: Column(
@@ -239,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
+                            SizedBox(
                               width: 550,
                               child: CustomTextField(
                                 borderRadius: 10,
@@ -272,15 +307,15 @@ class _MyHomePageState extends State<MyHomePage>
                                 enabled: true,
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             const Flexible(child: MethodDropdown()),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             const Flexible(child: SchoolDropdown()),
-                            SizedBox(
+                            const SizedBox(
                               height: 30,
                             ),
                             ElevatedButton(
@@ -333,16 +368,16 @@ class _MyHomePageState extends State<MyHomePage>
         builder: (_) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Text('Are you sure you want to close this window?'),
+            title: const Text('Are you sure you want to close this window?'),
             actions: [
               TextButton(
-                child: Text('No'),
+                child: const Text('No'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text('Yes'),
+                child: const Text('Yes'),
                 onPressed: () async {
                   Navigator.of(context).pop();
                   await windowManager.destroy();

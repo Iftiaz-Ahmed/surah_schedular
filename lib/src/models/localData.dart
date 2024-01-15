@@ -11,7 +11,7 @@ class LocalData {
 
   Future<Map<String, dynamic>> readJsonFile(String path) async {
     // Specify the path to your JSON file
-    String filePath = '$path/surah_scheduler.json';
+    String filePath = '$path\\surah_scheduler.json';
 
     try {
       File file = File(filePath);
@@ -29,28 +29,28 @@ class LocalData {
       print('Error reading JSON file: $e');
       return {};
     }
-
-    return {};
   }
 
   Future<void> saveInfo(String path, FormInputs formInputs, AdhanItem adhanItem, List<String> tasks, List azaanVolumes, var castDevice, String calledFrom) async {
     try {
       Map<String, dynamic> jsonData = await readJsonFile(path);
 
-      if (calledFrom == 'home') jsonData['home'] = formInputs.toString();
+      if (calledFrom == 'home') jsonData['formInputs'] = formInputs.toString();
       if (calledFrom == 'settings') jsonData['selectedAdhan'] = adhanItem;
       if (calledFrom == 'schedular') jsonData['tasks'] = tasks;
       if (calledFrom == 'settings') jsonData['azaanVolumes'] = azaanVolumes;
       if (calledFrom == 'cast') jsonData['castDevice'] = castDevice;
 
       // Specify the file path
-      String filePath = '$path/surah_scheduler.json';
+      String filePath = '$path\\surah_scheduler.json';
 
       // Convert JSON data to a string
       String jsonString = jsonEncode(jsonData);
       File file = File(filePath);
 
-      await file.writeAsString(jsonString);
+      await file.writeAsString(jsonString).then((value) {
+        print(value);
+      });
     } catch (e) {}
   }
 

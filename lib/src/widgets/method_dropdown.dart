@@ -36,7 +36,7 @@ class _MethodDropdownState extends State<MethodDropdown> {
             future: azaanBloc.getPrayerMethod(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               }
