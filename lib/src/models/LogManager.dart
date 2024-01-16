@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 class LogManager {
     Map<String, dynamic> logs = {};
-    DateTime currentDate = DateTime.now();
 
     Future<Map<String, dynamic>> readLogFile(String path) async {
         // Specify the path to your JSON file
@@ -28,13 +27,17 @@ class LogManager {
     }
 
     Future<void> saveLogs(String path, String msg) async {
+        DateTime currentDate = DateTime.now();
         String formattedDate = DateFormat('MM/dd/yyyy').format(currentDate);
         print("savings logs");
         try {
             Map<String, dynamic> jsonData = await readLogFile(path);
 
+            print('time to be added');
+            print(jsonData[formattedDate]);
             List items = jsonData[formattedDate] ?? [];
             items.add(msg);
+            print("Items: $items");
             jsonData[formattedDate] = items;
 
             // Specify the file path
@@ -44,6 +47,7 @@ class LogManager {
             String jsonString = jsonEncode(jsonData);
             File file = File(filePath);
 
+            print("JsonString $jsonString");
             await file.writeAsString(jsonString);
             print("Written at $filePath");
         } catch (e) {}
