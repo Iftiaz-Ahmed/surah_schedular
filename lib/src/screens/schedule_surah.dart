@@ -716,7 +716,6 @@ class _ScheduleSurahState extends State<ScheduleSurah> {
               timeString = unitIndex==0 ? "${_timeTextController.text} hour/s after ${prayers[prayerIndex]}" : "${_timeTextController.text} minute/s after ${prayers[prayerIndex]}";
             }
           }
-
           setState(() {
             count = 0; // required to update data
             if (toggleIndex == 1) {

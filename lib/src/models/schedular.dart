@@ -172,7 +172,8 @@ class Schedular {
           date = "${currentTime.day}-${currentTime.month}-${currentTime.year}";
         }
       } else {
-        return;
+        desiredTime = DateTime(convertedDate[2], convertedDate[1],
+            convertedDate[0], convertedTime[0], convertedTime[1], 0);
       }
     }
 
