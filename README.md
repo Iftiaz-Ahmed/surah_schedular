@@ -1,16 +1,8 @@
-# surah_schedular
+# surah_schedular (Digital Azaan App)
 
-A new Flutter project.
+**Don't launch the application directly from setup/installer.** [***After installing the app. Run the app from desktop shortcut.***]
 
-## Getting Started
+This application delivers Azaans (Islamic calls to prayer) at their designated times, providing users with timely and accurate alerts for each of the five daily prayers. Additionally, users have the capability to schedule Surahs, Ayats, and other relevant content for playback at specified intervals. The audio playback functionality extends to both device speakers and compatibility with Google Chromecast/Nest for an enhanced user experience.
 
-This project is a starting point for a Flutter application.
+#### [Download Application!](https://raw.githubusercontent.com/Iftiaz-Ahmed/surah_schedular/main/installers/digital_azaan.exe)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
